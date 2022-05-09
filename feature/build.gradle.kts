@@ -23,10 +23,11 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation(kotlin("test"))
 
-    testImplementation("io.cucumber:cucumber-java:7.3.0")
+    testImplementation("io.cucumber:cucumber-java")
+    testImplementation("io.cucumber:cucumber-junit")
     testImplementation("io.cucumber:cucumber-junit-platform-engine")
     testImplementation("org.junit.platform:junit-platform-suite")
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
 }
 
 tasks.withType<KotlinCompile> {
@@ -38,4 +39,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("cucumber.junit-platform.naming-strategy", "long")
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }

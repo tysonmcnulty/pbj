@@ -8,7 +8,6 @@ import org.junit.platform.suite.api.Suite
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("com/vmware/pbj/feature")
-@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.vmware.pbj.feature")
-@ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty")
+@SelectClasspathResource("features")
+@ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty, html:build/test-results/test/cucumber-results.html")
 class CucumberRunner
