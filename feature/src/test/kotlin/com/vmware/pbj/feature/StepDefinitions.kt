@@ -37,8 +37,13 @@ class StepDefinitions {
     }
 
     @Given("^the chef has access to the countertop$")
-    fun given_the_chef_has_accessed_the_countertop() {
+    fun given_countertop_access() {
         chef.receiveAccess(countertop)
+    }
+
+    @Given("^the chef does not have access to the countertop$")
+    fun given_no_countertop_access() {
+        chef.relinquishAccess(countertop)
     }
 
     @Given("^the bread is sealed$")
@@ -46,7 +51,7 @@ class StepDefinitions {
         bread.sealed = true
     }
 
-    @When("^the chef acts to unseal the bread$")
+    @When("^the chef unseals the bread$")
     fun when_the_chef_acts_to_unseal_the_bread() {
         chef.act("unseal bread")
     }

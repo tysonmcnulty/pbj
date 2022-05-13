@@ -1,22 +1,22 @@
 Feature: Countertop
 
-  Rule: The chef can interact with bread on a countertop
+  Rule: The chef can unseal sealed bread on an accessed countertop
 
     Background:
       * there is bread
+      * the bread is sealed
       * there is a chef
       * there is a countertop
 
-    Scenario: Sealed, on countertop, accessed
-      Given the bread is on the countertop
-      And the bread is sealed
-      And the chef has access to the countertop
-      When the chef acts to unseal the bread
-      Then the bread is unsealed
+    Scenario Template:
+      Given the bread is <where>
+      And the chef <relationship> the countertop
+      When the chef unseals the bread
+      Then the bread <result>
 
-    Scenario: Sealed, not on countertop, accessed
-      Given the bread is not on the countertop
-      And the bread is sealed
-      And the chef has access to the countertop
-      When the chef acts to unseal the bread
-      Then the bread is sealed
+      Examples:
+        | where                 | relationship            | result      |
+        | on the countertop     | has access to           | is unsealed |
+        | not on the countertop | has access to           | is sealed   |
+        | on the countertop     | does not have access to | is sealed   |
+        | not on the countertop | does not have access to | is sealed   |
