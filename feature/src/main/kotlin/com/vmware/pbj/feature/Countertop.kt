@@ -11,10 +11,9 @@ class Countertop(
         this.ingredients.remove(bread)
     }
 
-    override fun actions(): Map<String, () -> Unit> {
-        return ingredients.fold(mutableMapOf()) { acc, ingredient ->
-            acc += ingredient.actions()
-            return acc
+    override fun actions(): Map<String, (Actor) -> Unit> {
+        return this.ingredients.fold(mapOf()) {
+            acc, platform -> acc + platform.actions()
         }
     }
 }

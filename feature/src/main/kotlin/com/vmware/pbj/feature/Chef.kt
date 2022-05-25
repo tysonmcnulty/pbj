@@ -1,20 +1,27 @@
 package com.vmware.pbj.feature
 
-class Chef(
+class Chef: Actor {
     private val platforms: MutableSet<Platform> = mutableSetOf()
-): Actor {
+    val possessions: MutableSet<Any> = mutableSetOf()
+
     fun receiveAccess(platform: Platform) {
         platforms.add(platform)
     }
 
-    private fun actions(): Map<String, () -> Unit> {
-        return platforms.fold(mapOf()) { acc, platform ->
-            acc + platform.actions()
+    fun commands(): Map<String, () -> Unit> {
+        return platforms.fold(mapOf()) {
+            actions, platform -> actions + platform.actions().mapValues { action ->
+               { action.value.invoke(this) }
+            }
         }
     }
 
     override fun act(description: String) {
-        actions()[description]?.invoke()
+        commands()[description]?.invoke()
+    }
+
+    override fun receive(it: Any) {
+        possessions.add(it)
     }
 
     fun relinquishAccess(platform: Platform) {
