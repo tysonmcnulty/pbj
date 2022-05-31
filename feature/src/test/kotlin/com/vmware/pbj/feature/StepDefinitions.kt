@@ -40,7 +40,7 @@ class StepDefinitions {
     }
 
     @Given("^the bread has (\\d+) slices")
-    fun given_bread_slices(numSlices: Int) {
+    fun given_bread_has_number_of_slices(numSlices: Int) {
         bread.numberOfSlices = numSlices
     }
 
@@ -84,9 +84,24 @@ class StepDefinitions {
         assertThat(chef.commands().keys, not(hasItem(("unseal bread"))))
     }
 
+    @Then("^the chef can take a slice of bread")
+    fun then_the_chef_can_take_a_slice_of_bread() {
+        assertThat(chef.commands().keys, hasItem("take a slice"))
+    }
+
+    @Then("^the chef cannot take a slice of bread")
+    fun then_the_chef_cannot_take_a_slice_of_bread() {
+        assertThat(chef.commands().keys, not(hasItem(("take a slice"))))
+    }
+
     @Then("^the chef is holding a slice of bread")
     fun then_the_chef_is_holding_a_slice_of_bread() {
         assertThat(chef.possessions, hasItem(isA(Bread.Slice::class.java)))
+    }
+
+    @Then("^the chef is not holding a slice of bread")
+    fun then_the_chef_is_not_holding_a_slice_of_bread() {
+        assertThat(chef.possessions, not(hasItem(isA(Bread.Slice::class.java))))
     }
 
     @Then("^the bread is unsealed$")

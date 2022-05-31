@@ -54,7 +54,24 @@ Feature: Kitchen
 
     Scenario:
       Given the bread is unsealed
+      And the bread has 0 slices
+      Then the chef cannot take a slice of bread
+
+    Scenario:
+      Given the bread is unsealed
+      And the bread has 5 slices
+      Then the chef can take a slice of bread
+
+    Scenario:
+      Given the bread is unsealed
       And the bread has 5 slices
       When the chef takes a slice of bread
       Then the chef is holding a slice of bread
       And the bread has 4 slices remaining
+
+    Scenario:
+      Given the bread is unsealed
+      And the bread has 0 slices
+      When the chef takes a slice of bread
+      Then the chef is not holding a slice of bread
+      And the bread has 0 slices remaining
