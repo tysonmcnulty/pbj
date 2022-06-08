@@ -29,7 +29,7 @@ sourceSets.create("generated") {
 }
 
 tasks.register<JavaExec>("grun") {
-    dependsOn("compileJava")
+    dependsOn(":compileJava")
 
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("org.antlr.v4.gui.TestRig")
