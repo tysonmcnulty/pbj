@@ -1,5 +1,5 @@
 ## Terms
-- loaf of bread
+- bread
 - kitchen
 - countertop
 - pantry
@@ -8,5 +8,5 @@
 ## Relationships
 - A kitchen has a countertop
 - A pantry has many foods
-- A loaf of bread is a kind of food
-- A loaf of bread is either sealed or not
+- Bread is a kind of food
+- Bread is either sealed or not sealed
