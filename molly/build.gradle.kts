@@ -18,7 +18,11 @@ repositories {
 dependencies {
     antlr("org.antlr:antlr4:4.9.3")
     implementation("org.antlr:antlr4-runtime:4.9.3")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("com.google.googlejavaformat:google-java-format:1.15.0")
+    implementation("com.squareup:javapoet:1.13.0")
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
+    testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
