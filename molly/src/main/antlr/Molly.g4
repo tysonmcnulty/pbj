@@ -2,15 +2,20 @@ grammar Molly;
 
 file                     : (
                              heading
-                             | relationship_declaration
+                             | relation_declaration
+                             | definition_declaration
                              | term_declaration
                              | NEWLINE
                          )* ;
 
 heading                  : HASH+ WORD* NEWLINE ;
-relationship_declaration : DASH term RELATION (term LIST_DELIMITER)* term NEWLINE ;
+relation_declaration     : DASH term RELATER (term LIST_DELIMITER)* term NEWLINE ;
+definition_declaration   : DASH term DEFINER (value LIST_DELIMITER)* value NEWLINE ;
 term_declaration         : DASH term NEWLINE ;
 term                     : '*' term '*'
+                         | '"' term '"'
+                         | WORD+ ;
+value                    : '*' term '*'
                          | '"' term '"'
                          | WORD+ ;
 
@@ -20,9 +25,10 @@ HASH                : '#' ;
 INDEFINITE_ARTICLE  : ('a' | 'A' | 'an' | 'An') (WHITESPACE | NEWLINE) -> skip ;
 NEWLINE             : ('\r'? '\n' | '\r')+ ;
 LIST_DELIMITER      : ('or' | (',' 'or'?)) ;
-RELATION            : 'has'
+RELATER             : 'has'
                     | 'has many'
-                    | 'is a kind of'
+                    | 'is a kind of' ;
+DEFINER             : 'is just'
                     | 'is either' ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
 
