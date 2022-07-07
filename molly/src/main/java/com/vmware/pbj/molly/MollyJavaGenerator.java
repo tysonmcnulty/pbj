@@ -40,12 +40,13 @@ public class MollyJavaGenerator {
 
     public void write(Path dir) {
         try {
-            for (String termName: new HashSet<>(listener.getTerms().values())) {
-                TypeSpec typeSpec = TypeSpec.classBuilder(capitalize(termName))
+            for (var term: listener.getTerms()) {
+                TypeSpec typeSpec = TypeSpec.classBuilder(capitalize(term.getName()))
                         .addModifiers(Modifier.PUBLIC)
+                        .addModifiers(Modifier.ABSTRACT)
                         .build();
                 JavaFile javaFile = JavaFile.builder(PACKAGE, typeSpec).build();
-                System.out.printf("Writing %s to %s%n", capitalize(termName), dir);
+                System.out.printf("Writing %s to %s%n", capitalize(term.getName()), dir);
                 javaFile.writeToPath(dir);
             }
         } catch (IOException e) {
@@ -64,9 +65,9 @@ public class MollyJavaGenerator {
 
     private class MollyListener implements ParseTreeListener {
 
-        Map<String, String> terms = new HashMap<>();
+        Set<Term> terms = new HashSet<>();
 
-        public Map<String, String> getTerms() {
+        public Set<Term> getTerms() {
             return terms;
         }
 
@@ -85,11 +86,7 @@ public class MollyJavaGenerator {
             if (ctx instanceof MollyParser.TermContext) {
                 MollyParser.TermContext termContext = (MollyParser.TermContext) ctx;
                 String termName = termContext.WORD().stream().map(ParseTree::getText).collect(Collectors.joining(" "));
-                String[] singularAndPluralTermName = EnglishUtils.singularAndPlural(termName.toLowerCase());
-                String singular = singularAndPluralTermName[0];
-                String plural = singularAndPluralTermName[1];
-                terms.putIfAbsent(singular, singular);
-                terms.putIfAbsent(plural, singular);
+                terms.add(new Term(EnglishUtils.singularAndPlural(termName.toLowerCase())[0]));
             }
         }
 

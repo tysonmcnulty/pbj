@@ -1,4 +1,4 @@
 package com.vmware.example;
 
-public class Countertop {
+public abstract class Countertop {
 }

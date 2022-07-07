@@ -1,4 +1,4 @@
 package com.vmware.example;
 
-public class Kitchen {
+public abstract class Kitchen {
 }

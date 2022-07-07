@@ -41,8 +41,7 @@ public class MollyTest {
     void parse_tree_has_all_declarations() {
         MollyParser.FileContext fileContext = TestUtils.parse("kitchen.molly");
         assertEquals(5, fileContext.term_declaration().size());
-        assertEquals(3, fileContext.relation_declaration().size());
-        assertEquals(1, fileContext.definition_declaration().size());
+        assertEquals(4, fileContext.relation_declaration().size());
     }
 
     @Test
