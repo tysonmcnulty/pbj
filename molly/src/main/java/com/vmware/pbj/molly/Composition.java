@@ -1,7 +1,7 @@
 package com.vmware.pbj.molly;
 
-public class Composition extends Relation<Term, Composer> {
-    protected Composition(Term mutant, Term mutation, Composer operand) {
-        super(mutant, mutation, operand);
+public class Composition extends Relation<Composer, Term> {
+    protected Composition(Term mutant, Composer operand, Term mutation) {
+        super(mutant, operand, mutation);
     }
 }

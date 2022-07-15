@@ -49,7 +49,7 @@ tasks.register<JavaExec>("grun") {
 tasks.named<AntlrTask>("generateGrammarSource") {
     maxHeapSize = "128m"
     outputDirectory = file(FilePaths.get(outputDirectory.path, *grammarPackageName.split('.').toTypedArray()))
-    arguments = arguments + listOf("-package", grammarPackageName, "-visitor", "-no-listener")
+    arguments = arguments + listOf("-package", grammarPackageName, "-no-visitor", "-listener")
 }
 
 tasks.named<JavaCompile>("compileJava") {

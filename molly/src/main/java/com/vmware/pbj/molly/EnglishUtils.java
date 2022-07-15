@@ -4,7 +4,7 @@ import com.hypertino.inflector.English;
 
 public class EnglishUtils {
 
-    public static String[] singularAndPlural(String word) {
+    public static String[] inflectionsOf(String word) {
         if (isPlural(word)) {
             return new String[] { English.singular(word), word };
         } else {

@@ -1,7 +1,6 @@
 package com.vmware.pbj.molly;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
 
 public class Term {
     private final String name;
@@ -17,16 +16,13 @@ public class Term {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
-
         Term term = (Term) o;
-
-        return new EqualsBuilder().append(name, term.name).isEquals();
+        return Objects.equals(name, term.name);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).toHashCode();
+        return Objects.hash(name);
     }
 }

@@ -1,21 +1,20 @@
 package com.vmware.pbj.molly;
 
-import com.hypertino.inflector.English;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import javax.lang.model.element.Modifier;
-import javax.swing.text.html.parser.Parser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -24,7 +23,7 @@ public class MollyJavaGenerator {
 
     public static final String PACKAGE = "com.vmware.example";
     private MollyParser parser;
-    private MollyListener listener;
+    private MollyInterpreter listener;
 
     public void read(InputStream source) {
         MollyLexer lexer = lex(source);
@@ -34,19 +33,50 @@ public class MollyJavaGenerator {
     }
 
     public void process() {
-        listener = new MollyListener();
+        listener = new MollyInterpreter();
         ParseTreeWalker.DEFAULT.walk(listener, parser.file());
     }
 
     public void write(Path dir) {
         try {
-            for (var term: listener.getTerms()) {
-                TypeSpec typeSpec = TypeSpec.classBuilder(capitalize(term.getName()))
-                        .addModifiers(Modifier.PUBLIC)
-                        .addModifiers(Modifier.ABSTRACT)
-                        .build();
+            Map<String, TypeSpec.Builder> buildersByTermName = listener.getTerms().stream()
+                    .map((term) -> {
+                        var typeSpecBuilder = TypeSpec
+                            .classBuilder(capitalize(term.getName()))
+                            .addModifiers(Modifier.PUBLIC)
+                            .addModifiers(Modifier.ABSTRACT);
+
+                        return Map.entry(term.getName(), typeSpecBuilder);
+                    })
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
+
+            for (var composition: listener.getCompositions()) {
+                var mutant = buildersByTermName.get(composition.getMutant().getName());
+                var mutationName = composition.getMutation().getName();
+                var mutationClassName = capitalize(mutationName);
+                switch (composition.getOperand()) {
+                    case HAS:
+                        mutant
+                                .addField(
+                                        ClassName.get(PACKAGE, mutationClassName),
+                                        composition.getMutation().getName(),
+                                        Modifier.PROTECTED)
+                                .addMethod(
+                                        MethodSpec.methodBuilder("get" + mutationClassName)
+                                                .addModifiers(Modifier.PUBLIC)
+                                                .addStatement(String.format("return %s", mutationName))
+                                                .returns(ClassName.get(PACKAGE, mutationClassName))
+                                                .build());
+                        break;
+                    case HAS_MANY:
+                        break;
+                }
+            }
+
+            for (var builder: buildersByTermName.values()) {
+                TypeSpec typeSpec = builder.build();
                 JavaFile javaFile = JavaFile.builder(PACKAGE, typeSpec).build();
-                System.out.printf("Writing %s to %s%n", capitalize(term.getName()), dir);
+                System.out.printf("Writing %s to %s%n", capitalize(typeSpec.name), dir);
                 javaFile.writeToPath(dir);
             }
         } catch (IOException e) {
@@ -60,39 +90,6 @@ public class MollyJavaGenerator {
             return new MollyLexer(cStream);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
-        }
-    }
-
-    private class MollyListener implements ParseTreeListener {
-
-        Set<Term> terms = new HashSet<>();
-
-        public Set<Term> getTerms() {
-            return terms;
-        }
-
-        @Override
-        public void visitTerminal(TerminalNode node) {
-
-        }
-
-        @Override
-        public void visitErrorNode(ErrorNode node) {
-
-        }
-
-        @Override
-        public void enterEveryRule(ParserRuleContext ctx) {
-            if (ctx instanceof MollyParser.TermContext) {
-                MollyParser.TermContext termContext = (MollyParser.TermContext) ctx;
-                String termName = termContext.WORD().stream().map(ParseTree::getText).collect(Collectors.joining(" "));
-                terms.add(new Term(EnglishUtils.singularAndPlural(termName.toLowerCase())[0]));
-            }
-        }
-
-        @Override
-        public void exitEveryRule(ParserRuleContext ctx) {
-
         }
     }
 }
