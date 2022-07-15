@@ -1,6 +1,7 @@
 package com.vmware.pbj.molly;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,14 +10,32 @@ class MollyInterpreter extends MollyBaseListener {
 
     Map<String, Term> termsByName = new HashMap<>();
     Set<Composition> compositions = new HashSet<>();
+    Set<Categorization> categorizations = new HashSet<>();
 
     public Collection<Term> getTerms() {
         return termsByName.values();
     }
 
+    public Collection<Composition> getCompositions() {
+        return compositions;
+    }
+
+    public Collection<Categorization> getCategorizations() {
+        return categorizations;
+    }
+
     @Override
     public void enterTerm(MollyParser.TermContext ctx) {
-        String termName = getText(ctx);
+        addTerm(ctx.WORD());
+    }
+
+    @Override
+    public void enterCategory(MollyParser.CategoryContext ctx) {
+        addTerm(ctx.WORD());
+    }
+
+    private void addTerm(List<TerminalNode> word) {
+        String termName = getText(word);
         String[] inflectedTermNames = EnglishUtils.inflectionsOf(termName);
         var singular = inflectedTermNames[0];
         var plural = inflectedTermNames[1];
@@ -27,18 +46,23 @@ class MollyInterpreter extends MollyBaseListener {
 
     @Override
     public void exitComposition(MollyParser.CompositionContext ctx) {
-        PiecewiseComposition composition = new PiecewiseComposition();
-        composition.setMutant(termsByName.get(getText(ctx.term(0))));
+        var composition = new PiecewiseComposition();
+        composition.setMutant(termsByName.get(getText(ctx.term(0).WORD())));
         composition.setOperand(Composer.valueOfLabel(ctx.COMPOSER().getText()));
-        composition.setMutation(termsByName.get(getText(ctx.term(1))));
+        composition.setMutation(termsByName.get(getText(ctx.term(1).WORD())));
         compositions.add(composition);
     }
 
-    private String getText(MollyParser.TermContext ctx) {
-        return ctx.WORD().stream().map(ParseTree::getText).collect(Collectors.joining(" ")).toLowerCase();
+    @Override
+    public void exitCategorization(MollyParser.CategorizationContext ctx) {
+        var categorization = new PiecewiseCategorization();
+        categorization.setMutant(termsByName.get(getText(ctx.term().WORD())));
+        categorization.setOperand(Categorizer.valueOfLabel(ctx.CATEGORIZER().getText()));
+        categorization.setMutation(termsByName.get(getText(ctx.category().get(0).WORD())));
+        categorizations.add(categorization);
     }
 
-    public Collection<Composition> getCompositions() {
-        return compositions;
+    private String getText(List<TerminalNode> words) {
+        return words.stream().map(ParseTree::getText).collect(Collectors.joining(" ")).toLowerCase();
     }
 }

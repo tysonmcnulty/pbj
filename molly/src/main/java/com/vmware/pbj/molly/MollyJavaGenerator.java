@@ -50,28 +50,8 @@ public class MollyJavaGenerator {
                     })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
 
-            for (var composition: listener.getCompositions()) {
-                var mutant = buildersByTermName.get(composition.getMutant().getName());
-                var mutationName = composition.getMutation().getName();
-                var mutationClassName = capitalize(mutationName);
-                switch (composition.getOperand()) {
-                    case HAS:
-                        mutant
-                                .addField(
-                                        ClassName.get(PACKAGE, mutationClassName),
-                                        composition.getMutation().getName(),
-                                        Modifier.PROTECTED)
-                                .addMethod(
-                                        MethodSpec.methodBuilder("get" + mutationClassName)
-                                                .addModifiers(Modifier.PUBLIC)
-                                                .addStatement(String.format("return %s", mutationName))
-                                                .returns(ClassName.get(PACKAGE, mutationClassName))
-                                                .build());
-                        break;
-                    case HAS_MANY:
-                        break;
-                }
-            }
+            processCompositions(buildersByTermName);
+            processCategorizations(buildersByTermName);
 
             for (var builder: buildersByTermName.values()) {
                 TypeSpec typeSpec = builder.build();
@@ -81,6 +61,45 @@ public class MollyJavaGenerator {
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private void processCompositions(Map<String, TypeSpec.Builder> buildersByTermName) {
+        for (var composition: listener.getCompositions()) {
+            var mutant = buildersByTermName.get(composition.getMutant().getName());
+            var mutationName = composition.getMutation().getName();
+            var mutationClassName = capitalize(mutationName);
+            switch (composition.getOperand()) {
+                case HAS:
+                    mutant
+                            .addField(
+                                    ClassName.get(PACKAGE, mutationClassName),
+                                    composition.getMutation().getName(),
+                                    Modifier.PROTECTED)
+                            .addMethod(
+                                    MethodSpec.methodBuilder("get" + mutationClassName)
+                                            .addModifiers(Modifier.PUBLIC)
+                                            .addStatement(String.format("return %s", mutationName))
+                                            .returns(ClassName.get(PACKAGE, mutationClassName))
+                                            .build());
+                    break;
+                case HAS_MANY:
+                    break;
+            }
+        }
+    }
+
+    private void processCategorizations(Map<String, TypeSpec.Builder> buildersByTermName) {
+        for (var categorization: listener.getCategorizations()) {
+            var mutant = buildersByTermName.get(categorization.getMutant().getName());
+            var mutationName = categorization.getMutation().getName();
+            var mutationClassName = capitalize(mutationName);
+            switch (categorization.getOperand()) {
+                case IS_A_KIND_OF:
+                case IS_A_TYPE_OF:
+                    mutant.superclass(ClassName.get(PACKAGE, mutationClassName));
+                    break;
+            }
         }
     }
 
