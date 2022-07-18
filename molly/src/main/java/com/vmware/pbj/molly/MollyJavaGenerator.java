@@ -1,9 +1,6 @@
 package com.vmware.pbj.molly;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -52,6 +49,7 @@ public class MollyJavaGenerator {
 
             processCompositions(buildersByTermName);
             processCategorizations(buildersByTermName);
+            processDescriptions(buildersByTermName);
 
             for (var builder: buildersByTermName.values()) {
                 TypeSpec typeSpec = builder.build();
@@ -61,6 +59,23 @@ public class MollyJavaGenerator {
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private void processDescriptions(Map<String, TypeSpec.Builder> buildersByTermName) {
+        for (var description: listener.getDescriptions()) {
+            var mutant = buildersByTermName.get(description.getMutant().getName());
+            if (description.getOperand() == Describer.IS_EVIDENTLY) {
+                if (EnglishUtils.isNegatedPair(description.getMutation())) {
+                    mutant
+                            .addMethod(MethodSpec
+                                    .methodBuilder("is" + capitalize(description.getMutation().get(0)))
+                                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                    .returns(TypeName.BOOLEAN)
+                                    .build()
+                            );
+                }
+            }
         }
     }
 

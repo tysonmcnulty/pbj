@@ -1,7 +1,7 @@
 package com.vmware.pbj.molly;
 
-public final class PiecewiseCategorization extends Categorization {
-    public PiecewiseCategorization() {
+public class PiecewiseDefinition extends Definition {
+    protected PiecewiseDefinition() {
         super(null, null, null);
     }
 
@@ -9,7 +9,7 @@ public final class PiecewiseCategorization extends Categorization {
         this.mutant = mutant;
     }
 
-    public void setOperand(Categorizer operand) {
+    public void setOperand(Definer operand) {
         this.operand = operand;
     }
 

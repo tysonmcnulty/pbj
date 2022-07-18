@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 class MollyInterpreter extends MollyBaseListener {
 
     Map<String, Term> termsByName = new HashMap<>();
+
     Set<Composition> compositions = new HashSet<>();
     Set<Categorization> categorizations = new HashSet<>();
+    Set<Description> descriptions = new HashSet<>();
 
     public Collection<Term> getTerms() {
         return termsByName.values();
@@ -22,6 +24,10 @@ class MollyInterpreter extends MollyBaseListener {
 
     public Collection<Categorization> getCategorizations() {
         return categorizations;
+    }
+
+    public Collection<Description> getDescriptions() {
+        return descriptions;
     }
 
     @Override
@@ -51,6 +57,17 @@ class MollyInterpreter extends MollyBaseListener {
         composition.setOperand(Composer.valueOfLabel(ctx.COMPOSER().getText()));
         composition.setMutation(termsByName.get(getText(ctx.term(1).WORD())));
         compositions.add(composition);
+    }
+
+    @Override
+    public void exitDescription(MollyParser.DescriptionContext ctx) {
+        var description = new PiecewiseDescription();
+        description.setMutant(termsByName.get(getText(ctx.term().WORD())));
+        description.setOperand(Describer.valueOfLabel(ctx.DESCRIBER().getText()));
+        ctx.descriptor().forEach((d) -> {
+            description.addDescriptor(getText(d.WORD()));
+        });
+        descriptions.add(description);
     }
 
     @Override

@@ -10,22 +10,23 @@ file                     : (
 heading                  : HASH+ WORD* NEWLINE ;
 relation_declaration     : DASH relation NEWLINE ;
 term_declaration         : DASH term NEWLINE ;
-relation                 : composition
+relation                 : categorization
+                         | composition
                          | definition
-                         | categorization ;
-composition              : term COMPOSER (term LIST_DELIMITER)* term ;
-definition               : term DEFINER (value LIST_DELIMITER)* value ;
+                         | description ;
 categorization           : term CATEGORIZER (category LIST_DELIMITER)* category ;
+composition              : term COMPOSER (term LIST_DELIMITER)* term ;
+definition               : term DEFINER representation ;
+description              : term DESCRIBER (descriptor LIST_DELIMITER)* descriptor ;
 
 term                     : '*' term '*'
-                         | '"' term '"'
-                         | WORD+ ;
-value                    : '*' term '*'
                          | '"' term '"'
                          | WORD+ ;
 category                 : '*' term '*'
                          | '"' term '"'
                          | WORD+ ;
+descriptor               : WORD+ ;
+representation           : WORD+ ;
 
 
 WHITESPACE          : (' ' | '\t') -> skip ;
@@ -36,8 +37,8 @@ NEWLINE             : ('\r'? '\n' | '\r')+ ;
 LIST_DELIMITER      : ('or' | (',' 'or'?)) ;
 COMPOSER            : 'has'
                     | 'has many' ;
-DEFINER             : 'is just'
-                    | 'is either' ;
+DEFINER             : 'is just' ;
+DESCRIBER           : 'is evidently' ;
 CATEGORIZER         : 'is a kind of'
                     | 'is a type of' ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
