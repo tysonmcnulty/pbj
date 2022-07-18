@@ -89,7 +89,7 @@ public class MollyJavaGenerator {
                     mutant
                             .addField(
                                     ClassName.get(PACKAGE, mutationClassName),
-                                    composition.getMutation().getName(),
+                                    mutationName,
                                     Modifier.PROTECTED)
                             .addMethod(
                                     MethodSpec.methodBuilder("get" + mutationClassName)
@@ -99,6 +99,21 @@ public class MollyJavaGenerator {
                                             .build());
                     break;
                 case HAS_MANY:
+                    var pluralMutationName = EnglishUtils.inflectionsOf(mutationName)[1];
+                    TypeName collectionType = ParameterizedTypeName.get(
+                            ClassName.get("java.util", "Collection"),
+                            ClassName.get(PACKAGE, mutationClassName));
+                    mutant
+                            .addField(
+                                    collectionType,
+                                    pluralMutationName,
+                                    Modifier.PROTECTED)
+                            .addMethod(
+                                    MethodSpec.methodBuilder("get" + capitalize(pluralMutationName))
+                                            .addModifiers(Modifier.PUBLIC)
+                                            .addStatement(String.format("return %s", pluralMutationName))
+                                            .returns(collectionType)
+                                            .build());
                     break;
             }
         }
