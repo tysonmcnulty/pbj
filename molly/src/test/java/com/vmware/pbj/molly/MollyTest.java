@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -45,12 +44,11 @@ public class MollyTest {
     }
 
     @Test
-    void writer_writes_a_java_class_file() throws IOException {
-        Path tmpdir = Files.createTempDirectory(UUID.randomUUID().toString());
+    void writer_writes_all_java_files() throws IOException {
+        Path tmpdir = Files.createTempDirectory("MollyTest-");
         MollyJavaGenerator generator = new MollyJavaGenerator();
 
         generator.read(TestUtils.resource("kitchen.molly"));
-        generator.process();
         generator.write(tmpdir);
 
         Resource[] resources = TestUtils.resourcesMatching("classpath:/MollyTest/*.java");

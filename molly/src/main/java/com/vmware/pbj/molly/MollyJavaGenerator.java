@@ -18,18 +18,22 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class MollyJavaGenerator {
 
-    public static final String PACKAGE = "com.vmware.example";
-    private MollyParser parser;
+    public MollyJavaGenerator() {
+        this(new MollyJavaGeneratorConfig.Builder().build());
+    }
+
+    private final MollyJavaGeneratorConfig config;
     private MollyInterpreter listener;
+
+    public MollyJavaGenerator(MollyJavaGeneratorConfig config) {
+        this.config = config;
+    }
 
     public void read(InputStream source) {
         MollyLexer lexer = lex(source);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        parser = new MollyParser(tokenStream);
+        MollyParser parser = new MollyParser(tokenStream);
         parser.setBuildParseTree(true);
-    }
-
-    public void process() {
         listener = new MollyInterpreter();
         ParseTreeWalker.DEFAULT.walk(listener, parser.file());
     }
@@ -53,7 +57,7 @@ public class MollyJavaGenerator {
 
             for (var builder: buildersByTermName.values()) {
                 TypeSpec typeSpec = builder.build();
-                JavaFile javaFile = JavaFile.builder(PACKAGE, typeSpec).build();
+                JavaFile javaFile = JavaFile.builder(config.getJavaPackage(), typeSpec).build();
                 System.out.printf("Writing %s to %s%n", capitalize(typeSpec.name), dir);
                 javaFile.writeToPath(dir);
             }
@@ -88,21 +92,21 @@ public class MollyJavaGenerator {
                 case HAS:
                     mutant
                             .addField(
-                                    ClassName.get(PACKAGE, mutationClassName),
+                                    ClassName.get(config.getJavaPackage(), mutationClassName),
                                     mutationName,
                                     Modifier.PROTECTED)
                             .addMethod(
                                     MethodSpec.methodBuilder("get" + mutationClassName)
                                             .addModifiers(Modifier.PUBLIC)
                                             .addStatement(String.format("return %s", mutationName))
-                                            .returns(ClassName.get(PACKAGE, mutationClassName))
+                                            .returns(ClassName.get(config.getJavaPackage(), mutationClassName))
                                             .build());
                     break;
                 case HAS_MANY:
                     var pluralMutationName = EnglishUtils.inflectionsOf(mutationName)[1];
                     TypeName collectionType = ParameterizedTypeName.get(
                             ClassName.get("java.util", "Collection"),
-                            ClassName.get(PACKAGE, mutationClassName));
+                            ClassName.get(config.getJavaPackage(), mutationClassName));
                     mutant
                             .addField(
                                     collectionType,
@@ -127,7 +131,7 @@ public class MollyJavaGenerator {
             switch (categorization.getOperand()) {
                 case IS_A_KIND_OF:
                 case IS_A_TYPE_OF:
-                    mutant.superclass(ClassName.get(PACKAGE, mutationClassName));
+                    mutant.superclass(ClassName.get(config.getJavaPackage(), mutationClassName));
                     break;
             }
         }
