@@ -1,13 +1,28 @@
+import java.nio.file.Paths as FilePaths
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    dependencies {
+        classpath("com.vmware.pbj.molly", "molly-gradle-plugin", "0.0.1-SNAPSHOT")
+    }
+}
+
 plugins {
-    kotlin("jvm") version "1.6.21"
+    id("molly-gradle-plugin")
+    idea
     `java-library`
+    kotlin("jvm") version "1.6.21"
+
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+}
+
+
+molly {
+    javaPackage.set("com.foo.bar")
 }
 
 repositories {
@@ -33,6 +48,17 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "11"
+    }
+}
+
+tasks.create("printSourceSetInformation") {
+    doLast{
+        sourceSets.forEach { srcSet ->
+            println("["+srcSet.name+"]")
+            print("-->Source directories: "+srcSet.allJava.srcDirs+"\n")
+            print("-->Output directories: "+srcSet.output.classesDirs.files+"\n")
+            println("")
+        }
     }
 }
 

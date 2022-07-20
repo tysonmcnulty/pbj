@@ -6,6 +6,9 @@ plugins {
     idea
 }
 
+group = "org.vmware.pbj.molly"
+version = "0.0.1-SNAPSHOT"
+
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
@@ -43,7 +46,7 @@ tasks.register<JavaExec>("grun") {
     mainClass.set("org.antlr.v4.gui.TestRig")
     maxHeapSize = "128m"
     standardInput = System.`in`
-    args = listOf("$grammarPackageName.Chat", "chat")
+    args = listOf("$grammarPackageName.Molly", "file")
 }
 
 tasks.named<AntlrTask>("generateGrammarSource") {
@@ -57,10 +60,6 @@ tasks.named<JavaCompile>("compileJava") {
     source(sourceSets["generated"].java, sourceSets["main"].java)
 }
 
-tasks.named("clean") {
-    delete("generated-src")
-}
-
 tasks.named<Test>("test") {
     useJUnitPlatform()
     testLogging {
@@ -70,6 +69,6 @@ tasks.named<Test>("test") {
 
 idea {
     module {
-        sourceDirs = sourceDirs + file("generated-src/antlr/main/")
+        generatedSourceDirs = generatedSourceDirs + file("generated-src/antlr/main/")
     }
 }

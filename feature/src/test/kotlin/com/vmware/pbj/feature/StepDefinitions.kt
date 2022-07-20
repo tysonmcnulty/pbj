@@ -1,5 +1,7 @@
 package com.vmware.pbj.feature
 
+import com.foo.bar.Blaggy
+import com.foo.bar.Stooky
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -13,6 +15,7 @@ class StepDefinitions {
     private lateinit var countertop: Countertop
     private lateinit var bread: Bread
     private lateinit var chef: Chef
+    private val blaggy: Blaggy = Blaggy()
 
     @Given("^there is a countertop$")
     fun given_countertop() {
