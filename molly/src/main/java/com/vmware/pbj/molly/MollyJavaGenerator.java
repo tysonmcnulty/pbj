@@ -103,7 +103,9 @@ public class MollyJavaGenerator {
                                             .build());
                     break;
                 case HAS_MANY:
+                    System.out.printf("Mutation name: %s\n", mutationName);
                     var pluralMutationName = EnglishUtils.inflectionsOf(mutationName)[1];
+                    System.out.printf("Plural mutation name: %s\n", mutationName);
                     TypeName collectionType = ParameterizedTypeName.get(
                             ClassName.get("java.util", "Collection"),
                             ClassName.get(config.getJavaPackage(), mutationClassName));

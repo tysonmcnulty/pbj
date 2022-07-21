@@ -1,7 +1,5 @@
 package com.vmware.pbj.feature
 
-import com.foo.bar.Blaggy
-import com.foo.bar.Stooky
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -15,7 +13,6 @@ class StepDefinitions {
     private lateinit var countertop: Countertop
     private lateinit var bread: Bread
     private lateinit var chef: Chef
-    private val blaggy: Blaggy = Blaggy()
 
     @Given("^there is a countertop$")
     fun given_countertop() {
@@ -39,7 +36,7 @@ class StepDefinitions {
 
     @Given("^the bread is sealed$")
     fun given_the_bread_is_sealed() {
-        bread.sealed = true
+        bread.isSealed = true
     }
 
     @Given("^the bread has (\\d+) slices")
@@ -109,12 +106,12 @@ class StepDefinitions {
 
     @Then("^the bread is unsealed$")
     fun then_the_bread_is_unsealed() {
-        assertFalse(bread.sealed)
+        assertFalse(bread.isSealed)
     }
 
     @Then("^the bread is (still)? sealed")
     fun then_the_bread_is_sealed(which: String) {
-        assertTrue(bread.sealed)
+        assertTrue(bread.isSealed)
     }
 
     @Then("^the bread has (\\d+) slices remaining")

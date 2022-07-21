@@ -1,7 +1,7 @@
 package com.vmware.pbj.feature
 
 class Countertop(
-    private val ingredients: MutableSet<Platform> = mutableSetOf()
+    private val ingredients: MutableSet<Platform> = mutableSetOf(),
 ): Platform {
     fun receive(bread: Bread) {
         this.ingredients.add(bread)

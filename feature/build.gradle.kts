@@ -1,4 +1,3 @@
-import java.nio.file.Paths as FilePaths
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -12,7 +11,6 @@ plugins {
     idea
     `java-library`
     kotlin("jvm") version "1.6.21"
-
 }
 
 java {
@@ -20,9 +18,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-
 molly {
-    javaPackage.set("com.foo.bar")
+    javaPackage.set("com.vmware.pbj.core.model")
 }
 
 repositories {
