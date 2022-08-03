@@ -3,7 +3,7 @@
 - kitchen
 - countertop
 - pantry
-# - food
+- food
 
 ## Relationships
 - A kitchen has a countertop

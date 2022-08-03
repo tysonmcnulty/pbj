@@ -12,35 +12,39 @@ relation_declaration     : DASH relation NEWLINE ;
 term_declaration         : DASH term NEWLINE ;
 relation                 : categorization
                          | composition
-                         | definition
-                         | description ;
-categorization           : term CATEGORIZER (category LIST_DELIMITER)* category ;
-composition              : term COMPOSER (term LIST_DELIMITER)* term ;
-definition               : term DEFINER representation ;
-description              : term DESCRIBER (descriptor LIST_DELIMITER)* descriptor ;
+                         | description
+                         | enumeration ;
+categorization           : term CATEGORIZER category ;
+composition              : term COMPOSER (term DELIMITER)* term ;
+description              : term DESCRIBER (descriptor DELIMITER)* descriptor ;
+enumeration              : term ENUMERATOR (value DELIMITER)* value;
 
-term                     : '*' term '*'
-                         | '"' term '"'
+term                     : INDEFINITE_ARTICLE? '*' term '*'
+                         | INDEFINITE_ARTICLE? '"' term '"'
                          | WORD+ ;
-category                 : '*' term '*'
-                         | '"' term '"'
+category                 : INDEFINITE_ARTICLE? '*' category '*'
+                         | INDEFINITE_ARTICLE? '"' category '"'
                          | WORD+ ;
 descriptor               : WORD+ ;
-representation           : WORD+ ;
+value                    : '"' value '"'
+                         | WORD+ ;
 
 
+MARKDOWN_COMMENT    : NEWLINE '[comment]: <> (-' .*? ')' -> skip ;
 WHITESPACE          : (' ' | '\t') -> skip ;
 DASH                : '-' ;
 HASH                : '#' ;
-INDEFINITE_ARTICLE  : ('a' | 'A' | 'an' | 'An') (WHITESPACE | NEWLINE) -> skip ;
+INDEFINITE_ARTICLE  : ('a' | 'A' | 'an' | 'An') -> skip ;
 NEWLINE             : ('\r'? '\n' | '\r')+ ;
-LIST_DELIMITER      : ('or' | (',' 'or'?)) ;
+DELIMITER           : (', or' | ',' | 'or' ) ;
+CATEGORIZER         : 'is a kind of'
+                    | 'is a type of'
+                    | 'is just' ;
+DESCRIBER           : 'is evidently'
+                    | 'evidently has' ;
+ENUMERATOR          : 'can only be' ;
 COMPOSER            : 'has'
                     | 'has many' ;
-DEFINER             : 'is just' ;
-DESCRIBER           : 'is evidently' ;
-CATEGORIZER         : 'is a kind of'
-                    | 'is a type of' ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
 
 fragment LOWERCASE  : [a-z] ;

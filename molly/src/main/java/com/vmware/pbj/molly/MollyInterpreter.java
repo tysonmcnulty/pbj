@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 class MollyInterpreter extends MollyBaseListener {
 
-    Map<String, Term> termsByName = new HashMap<>();
+    Map<String, Term> termsByName = new LinkedHashMap<>();
 
-    Set<Composition> compositions = new HashSet<>();
-    Set<Categorization> categorizations = new HashSet<>();
-    Set<Description> descriptions = new HashSet<>();
+    Set<Composition> compositions = new LinkedHashSet<>();
+    Set<Categorization> categorizations = new LinkedHashSet<>();
+    Set<Description> descriptions = new LinkedHashSet<>();
 
     public Collection<Term> getTerms() {
         return termsByName.values();
@@ -60,6 +60,15 @@ class MollyInterpreter extends MollyBaseListener {
     }
 
     @Override
+    public void exitCategorization(MollyParser.CategorizationContext ctx) {
+        var categorization = new PiecewiseCategorization();
+        categorization.setMutant(termsByName.get(getText(ctx.term().WORD())));
+        categorization.setOperand(Categorizer.valueOfLabel(ctx.CATEGORIZER().getText()));
+        categorization.setMutation(termsByName.get(getText(ctx.category().WORD())));
+        categorizations.add(categorization);
+    }
+
+    @Override
     public void exitDescription(MollyParser.DescriptionContext ctx) {
         var description = new PiecewiseDescription();
         description.setMutant(termsByName.get(getText(ctx.term().WORD())));
@@ -71,12 +80,11 @@ class MollyInterpreter extends MollyBaseListener {
     }
 
     @Override
-    public void exitCategorization(MollyParser.CategorizationContext ctx) {
-        var categorization = new PiecewiseCategorization();
-        categorization.setMutant(termsByName.get(getText(ctx.term().WORD())));
-        categorization.setOperand(Categorizer.valueOfLabel(ctx.CATEGORIZER().getText()));
-        categorization.setMutation(termsByName.get(getText(ctx.category().get(0).WORD())));
-        categorizations.add(categorization);
+    public void exitEnumeration(MollyParser.EnumerationContext ctx) {
+        var term = termsByName.get(getText(ctx.term().WORD()));
+        var values = ctx.value()
+            .stream().map(it -> getText(it.value().WORD())).toArray(String[]::new);
+        term.setValueConstraint(new Constraint(values));
     }
 
     private String getText(List<TerminalNode> words) {

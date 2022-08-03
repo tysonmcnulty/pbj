@@ -1,5 +1,11 @@
 package com.vmware.pbj.molly;
 
+import com.google.common.base.Preconditions;
+import com.google.common.io.CharSink;
+import com.google.common.io.CharSource;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
+import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.squareup.javapoet.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -10,7 +16,10 @@ import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,6 +32,9 @@ public class MollyJavaGenerator {
     }
 
     private final MollyJavaGeneratorConfig config;
+    private static final Formatter FORMATTER = new Formatter(JavaFormatterOptions.builder()
+            .style(JavaFormatterOptions.Style.AOSP)
+            .build());
     private MollyInterpreter listener;
 
     public MollyJavaGenerator(MollyJavaGeneratorConfig config) {
@@ -40,14 +52,45 @@ public class MollyJavaGenerator {
 
     public void write(Path dir) {
         try {
-            Map<String, TypeSpec.Builder> buildersByTermName = listener.getTerms().stream()
+            Map<String, TypeSpec.Builder> buildersByTermName = getStandaloneTerms().stream()
                     .map((term) -> {
-                        var typeSpecBuilder = TypeSpec
-                            .classBuilder(capitalize(term.getName()))
-                            .addModifiers(Modifier.PUBLIC)
-                            .addModifiers(Modifier.ABSTRACT);
+                        if (term.getValueConstraint().isPresent()) {
+                            var typeSpecBuilder = TypeSpec
+                                    .enumBuilder(capitalize(term.getName()))
+                                    .addModifiers(Modifier.PUBLIC);
 
-                        return Map.entry(term.getName(), typeSpecBuilder);
+                            var enumValues = term.getValueConstraint().get().getValues();
+
+                            for (var v: enumValues) {
+                                typeSpecBuilder.addEnumConstant(
+                                        v.toUpperCase(),
+                                        TypeSpec.anonymousClassBuilder("$S", v).build()
+                                );
+                            }
+
+                            typeSpecBuilder
+                                    .addField(String.class, "label", Modifier.PRIVATE, Modifier.FINAL)
+                                    .addMethod(MethodSpec.constructorBuilder()
+                                            .addModifiers(Modifier.PRIVATE)
+                                            .addParameter(String.class, "label")
+                                            .addStatement("this.label = label")
+                                            .build())
+                                    .addMethod(MethodSpec.methodBuilder("getLabel")
+                                            .addModifiers(Modifier.PUBLIC)
+                                            .addStatement("return label")
+                                            .returns(String.class)
+                                            .build());
+
+                            return Map.entry(term.getName(), typeSpecBuilder);
+                        } else {
+                            var typeSpecBuilder = TypeSpec
+                                    .classBuilder(capitalize(term.getName()))
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .addModifiers(Modifier.ABSTRACT);
+
+                            return Map.entry(term.getName(), typeSpecBuilder);
+                        }
+
                     })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
 
@@ -58,11 +101,20 @@ public class MollyJavaGenerator {
             for (var builder: buildersByTermName.values()) {
                 TypeSpec typeSpec = builder.build();
                 JavaFile javaFile = JavaFile.builder(config.getJavaPackage(), typeSpec).build();
+                Path outputFile = getFilePath(javaFile, dir);
+
+                StringBuilder code = new StringBuilder();
+                javaFile.writeTo(code);
+
+                CharSink sink = com.google.common.io.Files.asCharSink(outputFile.toFile(), StandardCharsets.UTF_8);
                 System.out.printf("Writing %s to %s%n", capitalize(typeSpec.name), dir);
-                javaFile.writeToPath(dir);
+                FORMATTER.formatSource(CharSource.wrap(code), sink);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        } catch (FormatterException fe) {
+
+            throw new RuntimeException(fe);
         }
     }
 
@@ -103,9 +155,7 @@ public class MollyJavaGenerator {
                                             .build());
                     break;
                 case HAS_MANY:
-                    System.out.printf("Mutation name: %s\n", mutationName);
                     var pluralMutationName = EnglishUtils.inflectionsOf(mutationName)[1];
-                    System.out.printf("Plural mutation name: %s\n", mutationName);
                     TypeName collectionType = ParameterizedTypeName.get(
                             ClassName.get("java.util", "Collection"),
                             ClassName.get(config.getJavaPackage(), mutationClassName));
@@ -139,6 +189,17 @@ public class MollyJavaGenerator {
         }
     }
 
+    private Collection<Term> getStandaloneTerms() {
+        var unneededTerms = listener.getCategorizations().stream()
+                .filter(c -> c.getOperand().equals(Categorizer.IS_JUST))
+                .map(Categorization::getMutant)
+                .collect(Collectors.toSet());
+
+        return listener.getTerms().stream()
+                .filter(t -> !unneededTerms.contains(t))
+                .collect(Collectors.toSet());
+    }
+
     private static MollyLexer lex(InputStream in) {
         try {
             CharStream cStream = CharStreams.fromStream(in);
@@ -146,5 +207,19 @@ public class MollyJavaGenerator {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static Path getFilePath(JavaFile file, Path baseDir) throws IOException {
+        Preconditions.checkArgument(Files.notExists(baseDir) || Files.isDirectory(baseDir),
+                "path %s exists but is not a directory.", baseDir);
+        Path outputDirectory = baseDir;
+        if (!file.packageName.isEmpty()) {
+            for (String packageComponent : file.packageName.split("\\.")) {
+                outputDirectory = outputDirectory.resolve(packageComponent);
+            }
+            Files.createDirectories(outputDirectory);
+        }
+
+        return outputDirectory.resolve(file.typeSpec.name + ".java");
     }
 }
