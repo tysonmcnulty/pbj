@@ -94,8 +94,8 @@ public class MollyJavaGenerator {
                     })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
 
-            processCompositions(buildersByTermName);
             processCategorizations(buildersByTermName);
+            processCompositions(buildersByTermName);
             processDescriptions(buildersByTermName);
 
             for (var builder: buildersByTermName.values()) {
@@ -121,16 +121,27 @@ public class MollyJavaGenerator {
     private void processDescriptions(Map<String, TypeSpec.Builder> buildersByTermName) {
         for (var description: listener.getDescriptions()) {
             var mutant = buildersByTermName.get(description.getMutant().getName());
-            if (description.getOperand() == Describer.IS_EVIDENTLY) {
-                if (EnglishUtils.isNegatedPair(description.getMutation())) {
+            var mutation = description.getMutation();
+            switch (description.getOperand()) {
+                case IS_EVIDENTLY:
                     mutant
                             .addMethod(MethodSpec
-                                    .methodBuilder("is" + capitalize(description.getMutation().get(0)))
-                                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                    .methodBuilder("is" + capitalize(mutation.getName()))
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .addModifiers(Modifier.ABSTRACT)
                                     .returns(TypeName.BOOLEAN)
                                     .build()
                             );
-                }
+                    break;
+                case EVIDENTLY_HAS:
+                    mutant
+                            .addMethod(MethodSpec
+                                    .methodBuilder("get" + capitalize(mutation.getName()))
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .addModifiers(Modifier.ABSTRACT)
+                                    .returns(typeOf(mutation))
+                                    .build()
+                            );
             }
         }
     }
@@ -221,5 +232,21 @@ public class MollyJavaGenerator {
         }
 
         return outputDirectory.resolve(file.typeSpec.name + ".java");
+    }
+
+    private TypeName typeOf(Term term) {
+        switch(term.getRepresentation()) {
+            case STRING:
+                return TypeName.get(String.class);
+            case NUMBER:
+                return TypeName.get(int.class);
+            case DECIMAL:
+                return TypeName.get(double.class);
+            case BOOLEAN:
+                return TypeName.get(boolean.class);
+            case TERM:
+            default:
+                return ClassName.get(config.getJavaPackage(), capitalize(term.getName()));
+        }
     }
 }

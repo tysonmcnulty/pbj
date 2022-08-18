@@ -21,7 +21,7 @@ public enum Composer {
         }
     }
 
-    public static Composer valueOfLabel(String label) {
+    public static Composer labeled(String label) {
         return BY_LABEL.get(label);
     }
 }

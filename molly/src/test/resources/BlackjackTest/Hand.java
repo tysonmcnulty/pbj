@@ -8,4 +8,6 @@ public abstract class Hand {
     public Collection<Card> getCards() {
         return cards;
     }
+
+    public abstract int getValue();
 }

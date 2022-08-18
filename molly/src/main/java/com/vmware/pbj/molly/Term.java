@@ -5,11 +5,12 @@ import java.util.Optional;
 
 public class Term {
     private final String name;
-    private String representation;
+    private Representation representation;
     private Constraint constraint = null;
 
     public Term(String name) {
-        this.representation = this.name = name;
+        this.name = name;
+        this.representation = Representation.TERM;
     }
 
     public String getName() {
@@ -37,7 +38,11 @@ public class Term {
         this.constraint = constraint;
     }
 
-    public void setRepresentation(String representation) {
+    public Representation getRepresentation() {
+        return representation;
+    }
+
+    public void setRepresentation(Representation representation) {
         this.representation = representation;
     }
 }

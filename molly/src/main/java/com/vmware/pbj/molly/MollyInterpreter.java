@@ -40,7 +40,7 @@ class MollyInterpreter extends MollyBaseListener {
         addTerm(ctx.WORD());
     }
 
-    private void addTerm(List<TerminalNode> word) {
+    private Term addTerm(List<TerminalNode> word) {
         String termName = getText(word);
         String[] inflectedTermNames = EnglishUtils.inflectionsOf(termName);
         var singular = inflectedTermNames[0];
@@ -48,34 +48,43 @@ class MollyInterpreter extends MollyBaseListener {
         var term = new Term(singular);
         termsByName.putIfAbsent(singular, term);
         termsByName.putIfAbsent(plural, term);
+        return term;
     }
 
     @Override
     public void exitComposition(MollyParser.CompositionContext ctx) {
         var composition = new PiecewiseComposition();
         composition.setMutant(termsByName.get(getText(ctx.term(0).WORD())));
-        composition.setOperand(Composer.valueOfLabel(ctx.COMPOSER().getText()));
+        composition.setOperand(Composer.labeled(ctx.COMPOSER().getText()));
         composition.setMutation(termsByName.get(getText(ctx.term(1).WORD())));
         compositions.add(composition);
     }
 
     @Override
     public void exitCategorization(MollyParser.CategorizationContext ctx) {
-        var categorization = new PiecewiseCategorization();
-        categorization.setMutant(termsByName.get(getText(ctx.term().WORD())));
-        categorization.setOperand(Categorizer.valueOfLabel(ctx.CATEGORIZER().getText()));
-        categorization.setMutation(termsByName.get(getText(ctx.category().WORD())));
-        categorizations.add(categorization);
+
+        var mutant = termsByName.get(getText(ctx.term().WORD()));
+        var operand = Categorizer.labeled(ctx.CATEGORIZER().getText());
+        var category = getText(ctx.category().WORD());
+
+        if (operand == Categorizer.IS_JUST) {
+            mutant.setRepresentation(Representation.labeled(category));
+        } else {
+            var categorization = new PiecewiseCategorization();
+            categorization.setMutant(mutant);
+            categorization.setOperand(operand);
+            var term = addTerm(ctx.category().WORD());
+            categorization.setMutation(term);
+            categorizations.add(categorization);
+        }
     }
 
     @Override
     public void exitDescription(MollyParser.DescriptionContext ctx) {
         var description = new PiecewiseDescription();
-        description.setMutant(termsByName.get(getText(ctx.term().WORD())));
-        description.setOperand(Describer.valueOfLabel(ctx.DESCRIBER().getText()));
-        ctx.descriptor().forEach((d) -> {
-            description.addDescriptor(getText(d.WORD()));
-        });
+        description.setMutant(termsByName.get(getText(ctx.term().get(0).WORD())));
+        description.setOperand(Describer.labeled(ctx.DESCRIBER().getText()));
+        description.setMutation(termsByName.get(getText(ctx.term().get(1).WORD())));
         descriptions.add(description);
     }
 

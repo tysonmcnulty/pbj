@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Describer {
-    IS_EVIDENTLY("is evidently");
+    IS_EVIDENTLY("is evidently"),
+    EVIDENTLY_HAS("evidently has");
 
     public final String label;
 
@@ -20,7 +21,7 @@ public enum Describer {
         }
     }
 
-    public static Describer valueOfLabel(String label) {
+    public static Describer labeled(String label) {
         return BY_LABEL.get(label);
     }
 }

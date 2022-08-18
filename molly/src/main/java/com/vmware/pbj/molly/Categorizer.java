@@ -22,7 +22,7 @@ public enum Categorizer {
         }
     }
 
-    public static Categorizer valueOfLabel(String label) {
+    public static Categorizer labeled(String label) {
         return BY_LABEL.get(label);
     }
 }

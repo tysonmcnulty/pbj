@@ -16,8 +16,8 @@ relation                 : categorization
                          | enumeration ;
 categorization           : term CATEGORIZER category ;
 composition              : term COMPOSER (term DELIMITER)* term ;
-description              : term DESCRIBER (descriptor DELIMITER)* descriptor ;
-enumeration              : term ENUMERATOR (value DELIMITER)* value;
+description              : term DESCRIBER term (DELIMITER negation) ;
+enumeration              : term ENUMERATOR (value DELIMITER)* value ;
 
 term                     : INDEFINITE_ARTICLE? '*' term '*'
                          | INDEFINITE_ARTICLE? '"' term '"'
@@ -25,7 +25,7 @@ term                     : INDEFINITE_ARTICLE? '*' term '*'
 category                 : INDEFINITE_ARTICLE? '*' category '*'
                          | INDEFINITE_ARTICLE? '"' category '"'
                          | WORD+ ;
-descriptor               : WORD+ ;
+negation                 : WORD+ ;
 value                    : '"' value '"'
                          | WORD+ ;
 

@@ -1,10 +1,8 @@
 package com.vmware.pbj.molly;
 
-import java.util.ArrayList;
-
 public class PiecewiseDescription extends Description {
     protected PiecewiseDescription() {
-        super(null, null, new ArrayList<>());
+        super(null, null, null);
     }
 
     public void setMutant(Term mutant) {
@@ -15,7 +13,7 @@ public class PiecewiseDescription extends Description {
         this.operand = operand;
     }
 
-    public void addDescriptor(String descriptor) {
-        this.mutation.add(descriptor);
+    public void setMutation(Term mutation) {
+        this.mutation = mutation;
     }
 }
