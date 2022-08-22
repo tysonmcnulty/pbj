@@ -15,9 +15,11 @@ relation                 : categorization
                          | description
                          | enumeration ;
 categorization           : term CATEGORIZER category ;
-composition              : term COMPOSER (term DELIMITER)* term ;
+composition              : term composer term ;
 description              : term DESCRIBER term (DELIMITER negation)? ;
 enumeration              : term ENUMERATOR (value DELIMITER)* value ;
+
+composer                 : QUALIFIER? COMPOSER_VERB ;
 
 term                     : INDEFINITE_ARTICLE? '*' term '*'
                          | INDEFINITE_ARTICLE? '"' term '"'
@@ -40,11 +42,15 @@ DELIMITER           : (', or' | ',' | 'or' ) ;
 CATEGORIZER         : 'is a kind of'
                     | 'is a type of'
                     | 'is just' ;
-DESCRIBER           : 'is evidently'
+DESCRIBER           : 'evidently is'
                     | 'evidently has' ;
 ENUMERATOR          : 'can only be' ;
-COMPOSER            : 'has'
-                    | 'has many' ;
+COMPOSER_VERB       : 'has'
+                    | 'have'
+                    | 'has many'
+                    | 'have many';
+QUALIFIER           : 'may'
+                    | 'probably' ;
 WORD                : (LOWERCASE | UPPERCASE)+ ;
 
 fragment LOWERCASE  : [a-z] ;

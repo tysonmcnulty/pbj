@@ -15,39 +15,17 @@
 - A hand has many cards
 - A hand evidently has a value
 - A value is just a number
+- A hand evidently is soft or hard
 
 ### Player
 - A player has many chips
+- A player may have a hand
 
 ### Dealer
+- A dealer may have a hand
 
 ### Table
 - A table has many players
 - A table has a dealer
 - A table has a shoe
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[comment]: <> (- A suit is just "hearts", "spades", "diamonds", or "clubs")
-
-[comment]: <> (- A rank is just "ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", or "king")
-
-[comment]: <> (- A hand evidently has a value)
-
-[comment]: <> (- A value is just a number)
-
-[comment]: <> (- A player may have a hand)
-
-[comment]: <> (- A dealer may have a hand)

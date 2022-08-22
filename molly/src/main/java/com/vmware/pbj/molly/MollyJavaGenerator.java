@@ -123,7 +123,7 @@ public class MollyJavaGenerator {
             var mutant = buildersByTermName.get(description.getMutant().getName());
             var mutation = description.getMutation();
             switch (description.getOperand()) {
-                case IS_EVIDENTLY:
+                case EVIDENTLY_IS:
                     mutant
                             .addMethod(MethodSpec
                                     .methodBuilder("is" + capitalize(mutation.getName()))
@@ -149,23 +149,37 @@ public class MollyJavaGenerator {
     private void processCompositions(Map<String, TypeSpec.Builder> buildersByTermName) {
         for (var composition: listener.getCompositions()) {
             var mutant = buildersByTermName.get(composition.getMutant().getName());
-            var mutationName = composition.getMutation().getName();
+            var mutation = composition.getMutation();
+            var mutationName = mutation.getName();
             var mutationClassName = capitalize(mutationName);
-            switch (composition.getOperand()) {
+            switch (composition.getOperand().getVerb()) {
                 case HAS:
-                    mutant
-                            .addField(
-                                    ClassName.get(config.getJavaPackage(), mutationClassName),
-                                    mutationName,
-                                    Modifier.PROTECTED)
-                            .addMethod(
-                                    MethodSpec.methodBuilder("get" + mutationClassName)
-                                            .addModifiers(Modifier.PUBLIC)
-                                            .addStatement(String.format("return %s", mutationName))
-                                            .returns(ClassName.get(config.getJavaPackage(), mutationClassName))
-                                            .build());
+                case HAVE:
+                    mutant.addField(
+                            typeOf(mutation),
+                            mutationName,
+                            Modifier.PROTECTED);
+
+                    var accessor = MethodSpec.methodBuilder("get" + mutationClassName)
+                                    .addModifiers(Modifier.PUBLIC);
+
+                    if (composition.getOperand().getQualifier().isPresent()) {
+                        TypeName optionalType = ParameterizedTypeName.get(
+                                ClassName.get("java.util", "Optional"),
+                                typeOf(mutation));
+                        accessor
+                                .addStatement(String.format("return Optional.ofNullable(%s)", mutationName))
+                                .returns(optionalType);
+                    } else {
+                        accessor
+                                .addStatement(String.format("return %s", mutationName))
+                                .returns(typeOf(mutation));
+                    }
+
+                    mutant.addMethod(accessor.build());
                     break;
                 case HAS_MANY:
+                case HAVE_MANY:
                     var pluralMutationName = EnglishUtils.inflectionsOf(mutationName)[1];
                     TypeName collectionType = ParameterizedTypeName.get(
                             ClassName.get("java.util", "Collection"),

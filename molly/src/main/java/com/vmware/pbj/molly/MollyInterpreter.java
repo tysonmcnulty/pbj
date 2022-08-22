@@ -55,7 +55,10 @@ class MollyInterpreter extends MollyBaseListener {
     public void exitComposition(MollyParser.CompositionContext ctx) {
         var composition = new PiecewiseComposition();
         composition.setMutant(termsByName.get(getText(ctx.term(0).WORD())));
-        composition.setOperand(Composer.labeled(ctx.COMPOSER().getText()));
+        composition.setOperand(new Composer(
+                Composer.Verb.labeled(ctx.composer().COMPOSER_VERB().getText()),
+                ctx.composer().QUALIFIER() == null ? null : Qualifier.labeled(ctx.composer().QUALIFIER().getText())
+        ));
         composition.setMutation(termsByName.get(getText(ctx.term(1).WORD())));
         compositions.add(composition);
     }
