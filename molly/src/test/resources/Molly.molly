@@ -1,0 +1,41 @@
+## Terms
+- Language
+- Term
+- Relation
+
+## Relations
+### Language
+- A language has many terms
+- A language has many relations
+
+### Term
+
+- A term has a name, which is just a string
+- A term evidently is primitive or not
+- A term may have a language
+- A term may have a constraint
+- A constraint has many values, which are just strings
+
+### Relation
+- A relation has a mutant, which is just a term
+- A relation has a mutation, which is just a term
+- A relation has some kind of relater
+
+### Composition
+- A composition is a kind of relation, wherein its relater is just a "composer"
+
+[comment]: <> (- A composer may have a qualifier)
+
+[comment]: <> (- A qualifier can only be "may" or "probably")
+
+[comment]: <> (- A composer has its verb)
+
+[comment]: <> (- A composer's verb can only be "has", "have", "has many", or "have many")
+
+### Categorization
+
+[comment]: <> (- A categorization is a kind of relation, wherein its relater is a "categorizer")
+
+### Description
+
+[comment]: <> (- A description is a kind of relation, wherein its relater is a "describer")

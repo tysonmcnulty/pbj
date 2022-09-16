@@ -10,7 +10,7 @@ import static java.util.Collections.indexOfSubList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MollyTest {
+public class MollyParserTest {
 
     List<Token> tokens = TestUtils.tokenize("Kitchen.molly");
 

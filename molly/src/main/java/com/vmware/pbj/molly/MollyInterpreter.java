@@ -8,95 +8,116 @@ import java.util.stream.Collectors;
 
 class MollyInterpreter extends MollyBaseListener {
 
-    Map<String, Term> termsByName = new LinkedHashMap<>();
+    private final Language rootLanguage = new Language();
+    private final Deque<Language> languageStack = new ArrayDeque<>(List.of(rootLanguage));
 
-    Set<Composition> compositions = new LinkedHashSet<>();
-    Set<Categorization> categorizations = new LinkedHashSet<>();
-    Set<Description> descriptions = new LinkedHashSet<>();
-
-    public Collection<Term> getTerms() {
-        return termsByName.values();
-    }
-
-    public Collection<Composition> getCompositions() {
-        return compositions;
-    }
-
-    public Collection<Categorization> getCategorizations() {
-        return categorizations;
-    }
-
-    public Collection<Description> getDescriptions() {
-        return descriptions;
+    public Language getLanguage() {
+        return languageStack.getFirst();
     }
 
     @Override
-    public void enterTerm(MollyParser.TermContext ctx) {
-        addTerm(ctx.WORD());
-    }
+    public void exitTerm(MollyParser.TermContext ctx) {
+        String givenTermName = getText(ctx.WORD());
+        if (givenTermName.isEmpty()) return;
 
-    @Override
-    public void enterCategory(MollyParser.CategoryContext ctx) {
-        addTerm(ctx.WORD());
-    }
-
-    private Term addTerm(List<TerminalNode> word) {
-        String termName = getText(word);
-        String[] inflectedTermNames = EnglishUtils.inflectionsOf(termName);
-        var singular = inflectedTermNames[0];
-        var plural = inflectedTermNames[1];
-        var term = new Term(singular);
-        termsByName.putIfAbsent(singular, term);
-        termsByName.putIfAbsent(plural, term);
-        return term;
+        rootLanguage.addTermByName(givenTermName);
     }
 
     @Override
     public void exitComposition(MollyParser.CompositionContext ctx) {
         var composition = new PiecewiseComposition();
-        composition.setMutant(termsByName.get(getText(ctx.term(0).WORD())));
-        composition.setOperand(new Composer(
+        composition.setMutant(rootLanguage.getTermByName(getText(ctx.term(0).WORD())));
+        composition.setRelater(new Composer(
                 Composer.Verb.labeled(ctx.composer().COMPOSER_VERB().getText()),
                 ctx.composer().QUALIFIER() == null ? null : Qualifier.labeled(ctx.composer().QUALIFIER().getText())
         ));
-        composition.setMutation(termsByName.get(getText(ctx.term(1).WORD())));
-        compositions.add(composition);
+        composition.setMutation(rootLanguage.getTermByName(getText(ctx.term(1).WORD())));
+        getLanguage().addComposition(composition);
     }
 
     @Override
     public void exitCategorization(MollyParser.CategorizationContext ctx) {
+        var mutant = rootLanguage.getTermByName(getText(ctx.term(0).WORD()));
+        var relater = Categorizer.labeled(ctx.CATEGORIZER().getText());
+        var mutation = rootLanguage.getTermByName(getText(ctx.term(1).WORD()));
 
-        var mutant = termsByName.get(getText(ctx.term().WORD()));
-        var operand = Categorizer.labeled(ctx.CATEGORIZER().getText());
-        var category = getText(ctx.category().WORD());
+        var categorization = new PiecewiseCategorization();
+        categorization.setMutant(mutant);
+        categorization.setRelater(relater);
+        categorization.setMutation(mutation);
+        getLanguage().addCategorization(categorization);
+    }
 
-        if (operand == Categorizer.IS_JUST) {
-            mutant.setRepresentation(Representation.labeled(category));
-        } else {
-            var categorization = new PiecewiseCategorization();
-            categorization.setMutant(mutant);
-            categorization.setOperand(operand);
-            var term = addTerm(ctx.category().WORD());
-            categorization.setMutation(term);
-            categorizations.add(categorization);
+    @Override
+    public void enterSubcategorization(MollyParser.SubcategorizationContext ctx) {
+        if (Subordinator.labeled(ctx.SUBORDINATOR().getText()) == Subordinator.WHEREIN) {
+            var outerTerm = rootLanguage.getTermByName(getText(
+                    ((MollyParser.Relation_declarationContext) ctx.getParent().getParent())
+                            .relation().categorization().term(0).WORD()));
+            var language = outerTerm.getLanguage().orElse(new Language());
+            outerTerm.setLanguage(language);
+            languageStack.push(language);
+        }
+    }
+
+    @Override
+    public void exitSubcategorization(MollyParser.SubcategorizationContext ctx) {
+        Language language = getLanguage();
+        Term mutant;
+        Categorizer relater;
+        PiecewiseCategorization categorization;
+        Term mutation;
+
+        switch (Subordinator.labeled(ctx.SUBORDINATOR().getText())) {
+
+            case WHEREIN:
+                mutant = rootLanguage.getTermByName(getText(ctx.term(0).WORD()));
+                relater = Categorizer.labeled(ctx.CATEGORIZER().getText());
+                mutation = rootLanguage.getTermByName(getText(ctx.term(1).term().WORD()));
+
+                categorization = new PiecewiseCategorization();
+                categorization.setMutant(mutant);
+                categorization.setRelater(relater);
+                categorization.setMutation(mutation);
+                language.addCategorization(categorization);
+
+                languageStack.pop();
+
+                break;
+            case WHICH:
+                mutant = language.getTermByName(getText(
+                        ((MollyParser.CompositionContext)
+                            ((MollyParser.Relation_declarationContext)
+                                ctx.getParent().getParent()
+                            ).relation().getChild(0)
+                        ).term(1).WORD()));
+                relater = Categorizer.labeled(ctx.CATEGORIZER().getText());
+                mutation = rootLanguage.getTermByName(getText(ctx.term(0).WORD()));
+
+                categorization = new PiecewiseCategorization();
+                categorization.setMutant(mutant);
+                categorization.setRelater(relater);
+                categorization.setMutation(mutation);
+                language.addCategorization(categorization);
+                break;
         }
     }
 
     @Override
     public void exitDescription(MollyParser.DescriptionContext ctx) {
         var description = new PiecewiseDescription();
-        description.setMutant(termsByName.get(getText(ctx.term().get(0).WORD())));
-        description.setOperand(Describer.labeled(ctx.DESCRIBER().getText()));
-        description.setMutation(termsByName.get(getText(ctx.term().get(1).WORD())));
-        descriptions.add(description);
+        description.setMutant(rootLanguage.getTermByName(getText(ctx.term().get(0).WORD())));
+        description.setRelater(Describer.labeled(ctx.DESCRIBER().getText()));
+        description.setMutation(rootLanguage.getTermByName(getText(ctx.term().get(1).WORD())));
+        getLanguage().addDescription(description);
     }
 
     @Override
     public void exitEnumeration(MollyParser.EnumerationContext ctx) {
-        var term = termsByName.get(getText(ctx.term().WORD()));
+        var term = rootLanguage.getTermByName(getText(ctx.term().WORD()));
         var values = ctx.value()
             .stream().map(it -> getText(it.value().WORD())).toArray(String[]::new);
-        term.setValueConstraint(new Constraint(values));
+        term.setConstraint(new Constraint(values));
     }
 
     private String getText(List<TerminalNode> words) {

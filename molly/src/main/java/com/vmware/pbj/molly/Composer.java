@@ -27,10 +27,11 @@ public class Composer {
     }
 
     public enum Verb {
-        HAS("has"),
-        HAVE("have"),
+        HAS_SOME_KIND_OF("has some kind of"),
         HAS_MANY("has many"),
-        HAVE_MANY("have many")
+        HAS("has"),
+        HAVE_MANY("have many"),
+        HAVE("have"),
         ;
 
         public final String label;

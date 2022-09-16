@@ -1,19 +1,21 @@
-package com.vmware.pbj.molly;
+package io.github.tysonmcnulty;
 
 public abstract class Relation<T> {
     protected Term mutant;
-    protected T relater;
+
     protected Term mutation;
+
+    protected T relater;
 
     public Term getMutant() {
         return mutant;
     }
 
-    public T getRelater() {
-        return relater;
-    }
-
     public Term getMutation() {
         return mutation;
+    }
+
+    public T getRelater() {
+        return relater;
     }
 }

@@ -2,19 +2,46 @@ package com.vmware.pbj.molly;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class Term {
+    private Constraint constraint;
     private final String name;
-    private Representation representation;
-    private Constraint constraint = null;
+    private Language language;
+
+    private final static Set<String> primitiveNames = Set.of(
+            "string",
+            "number",
+            "decimal",
+            "boolean"
+    );
 
     public Term(String name) {
         this.name = name;
-        this.representation = Representation.TERM;
     }
 
     public String getName() {
         return name;
+    }
+
+    public boolean isPrimitive() {
+        return primitiveNames.contains(name);
+    }
+
+    public Optional<Constraint> getConstraint() {
+        return Optional.ofNullable(constraint);
+    }
+
+    public void setConstraint(Constraint constraint) {
+        this.constraint = constraint;
+    }
+
+    public Optional<Language> getLanguage() {
+        return Optional.ofNullable(language);
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 
     @Override
@@ -28,21 +55,5 @@ public class Term {
     @Override
     public int hashCode() {
         return Objects.hash(name);
-    }
-
-    public Optional<Constraint> getValueConstraint() {
-        return Optional.ofNullable(constraint);
-    }
-
-    public void setValueConstraint(Constraint constraint) {
-        this.constraint = constraint;
-    }
-
-    public Representation getRepresentation() {
-        return representation;
-    }
-
-    public void setRepresentation(Representation representation) {
-        this.representation = representation;
     }
 }

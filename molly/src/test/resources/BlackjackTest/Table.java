@@ -1,4 +1,4 @@
-package com.vmware.example;
+package io.github.tysonmcnulty;
 
 import java.util.Collection;
 

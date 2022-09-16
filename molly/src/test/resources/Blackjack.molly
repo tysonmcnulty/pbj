@@ -21,6 +21,9 @@
 - A player has many chips
 - A player may have a hand
 
+### Chip
+- A chip has a value
+
 ### Dealer
 - A dealer may have a hand
 
@@ -28,4 +31,3 @@
 - A table has many players
 - A table has a dealer
 - A table has a shoe
-

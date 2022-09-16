@@ -19,7 +19,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 public class MollyJavaGenerator {
 
     public MollyJavaGenerator() {
-        this(new MollyJavaGeneratorConfig.Builder().build());
+        this(MollyJavaGeneratorConfig.builder().build());
     }
 
     private final MollyJavaGeneratorConfig config;
@@ -52,14 +51,14 @@ public class MollyJavaGenerator {
 
     public void write(Path dir) {
         try {
-            Map<String, TypeSpec.Builder> buildersByTermName = getStandaloneTerms().stream()
+            Map<String, TypeSpec.Builder> buildersByTermName = listener.getLanguage().getStandaloneTerms().stream()
                     .map((term) -> {
-                        if (term.getValueConstraint().isPresent()) {
+                        if (term.getConstraint().isPresent()) {
                             var typeSpecBuilder = TypeSpec
                                     .enumBuilder(capitalize(term.getName()))
                                     .addModifiers(Modifier.PUBLIC);
 
-                            var enumValues = term.getValueConstraint().get().getValues();
+                            var enumValues = term.getConstraint().get().getValues();
 
                             for (var v: enumValues) {
                                 typeSpecBuilder.addEnumConstant(
@@ -83,6 +82,7 @@ public class MollyJavaGenerator {
 
                             return Map.entry(term.getName(), typeSpecBuilder);
                         } else {
+                            System.out.println("\"" + term.getName() + "\"");
                             var typeSpecBuilder = TypeSpec
                                     .classBuilder(capitalize(term.getName()))
                                     .addModifiers(Modifier.PUBLIC)
@@ -119,10 +119,10 @@ public class MollyJavaGenerator {
     }
 
     private void processDescriptions(Map<String, TypeSpec.Builder> buildersByTermName) {
-        for (var description: listener.getDescriptions()) {
+        for (var description: listener.getLanguage().getDescriptions()) {
             var mutant = buildersByTermName.get(description.getMutant().getName());
             var mutation = description.getMutation();
-            switch (description.getOperand()) {
+            switch (description.getRelater()) {
                 case EVIDENTLY_IS:
                     mutant
                             .addMethod(MethodSpec
@@ -147,15 +147,15 @@ public class MollyJavaGenerator {
     }
 
     private void processCompositions(Map<String, TypeSpec.Builder> buildersByTermName) {
-        for (var composition: listener.getCompositions()) {
-            var mutant = buildersByTermName.get(composition.getMutant().getName());
+        for (var composition: listener.getLanguage().getCompositions()) {
+            var builder = buildersByTermName.get(composition.getMutant().getName());
             var mutation = composition.getMutation();
             var mutationName = mutation.getName();
             var mutationClassName = capitalize(mutationName);
-            switch (composition.getOperand().getVerb()) {
+            switch (composition.getRelater().getVerb()) {
                 case HAS:
                 case HAVE:
-                    mutant.addField(
+                    builder.addField(
                             typeOf(mutation),
                             mutationName,
                             Modifier.PROTECTED);
@@ -163,7 +163,7 @@ public class MollyJavaGenerator {
                     var accessor = MethodSpec.methodBuilder("get" + mutationClassName)
                                     .addModifiers(Modifier.PUBLIC);
 
-                    if (composition.getOperand().getQualifier().isPresent()) {
+                    if (composition.getRelater().getQualifier().isPresent()) {
                         TypeName optionalType = ParameterizedTypeName.get(
                                 ClassName.get("java.util", "Optional"),
                                 typeOf(mutation));
@@ -176,7 +176,7 @@ public class MollyJavaGenerator {
                                 .returns(typeOf(mutation));
                     }
 
-                    mutant.addMethod(accessor.build());
+                    builder.addMethod(accessor.build());
                     break;
                 case HAS_MANY:
                 case HAVE_MANY:
@@ -184,7 +184,7 @@ public class MollyJavaGenerator {
                     TypeName collectionType = ParameterizedTypeName.get(
                             ClassName.get("java.util", "Collection"),
                             ClassName.get(config.getJavaPackage(), mutationClassName));
-                    mutant
+                    builder
                             .addField(
                                     collectionType,
                                     pluralMutationName,
@@ -196,33 +196,60 @@ public class MollyJavaGenerator {
                                             .returns(collectionType)
                                             .build());
                     break;
-            }
-        }
-    }
+                case HAS_SOME_KIND_OF:
+                    var genericType = TypeVariableName.get("T");
 
-    private void processCategorizations(Map<String, TypeSpec.Builder> buildersByTermName) {
-        for (var categorization: listener.getCategorizations()) {
-            var mutant = buildersByTermName.get(categorization.getMutant().getName());
-            var mutationName = categorization.getMutation().getName();
-            var mutationClassName = capitalize(mutationName);
-            switch (categorization.getOperand()) {
-                case IS_A_KIND_OF:
-                case IS_A_TYPE_OF:
-                    mutant.superclass(ClassName.get(config.getJavaPackage(), mutationClassName));
+                    builder
+                            .addTypeVariable(genericType)
+                            .addField(genericType, mutationName, Modifier.PROTECTED)
+                            .addMethod(MethodSpec.methodBuilder("get" + mutationClassName)
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .addStatement(String.format("return %s", mutationName))
+                                    .returns(genericType)
+                                    .build()
+                            )
+                    ;
                     break;
             }
         }
     }
 
-    private Collection<Term> getStandaloneTerms() {
-        var unneededTerms = listener.getCategorizations().stream()
-                .filter(c -> c.getOperand().equals(Categorizer.IS_JUST))
-                .map(Categorization::getMutant)
-                .collect(Collectors.toSet());
+    private void processCategorizations(Map<String, TypeSpec.Builder> buildersByTermName) {
+        for (var categorization: listener.getLanguage().getCategorizations()) {
+            var mutant = buildersByTermName.get(categorization.getMutant().getName());
+            var mutation = categorization.getMutation();
+            var mutationName = mutation.getName();
+            var mutationClassName = capitalize(mutationName);
+            switch (categorization.getRelater()) {
+                case IS_A_KIND_OF:
+                case IS_A_TYPE_OF:
+                    TypeName supertype;
+                    var genericComposition = listener.getLanguage().getCompositions().stream()
+                            .filter((it) ->
+                                    it.getMutant().equals(mutation) &&
+                                    it.getRelater().getVerb().equals(Composer.Verb.HAS_SOME_KIND_OF))
+                            .findFirst();
 
-        return listener.getTerms().stream()
-                .filter(t -> !unneededTerms.contains(t))
-                .collect(Collectors.toSet());
+                    if (genericComposition.isPresent()) {
+                        var innerCategorization = categorization.getMutant().getLanguage().get().getCategorizations().stream()
+                                .filter((it) ->
+                                        it.getMutant().equals(genericComposition.get().getMutation()) &&
+                                        it.getRelater().equals(Categorizer.IS_JUST))
+                                .findFirst();
+                        supertype = ParameterizedTypeName.get(
+                                ClassName.get(config.getJavaPackage(), mutationClassName),
+                                ClassName.get(config.getJavaPackage(), capitalize(innerCategorization.get().getMutation().getName()))
+                        );
+                    } else {
+                        supertype = ClassName.get(config.getJavaPackage(), mutationClassName);
+                    }
+                    mutant.superclass(supertype);
+                    break;
+                case IS_JUST:
+                case ARE_JUST:
+                    break;
+            }
+        }
     }
 
     private static MollyLexer lex(InputStream in) {
@@ -249,18 +276,32 @@ public class MollyJavaGenerator {
     }
 
     private TypeName typeOf(Term term) {
-        switch(term.getRepresentation()) {
-            case STRING:
+        var representation = resolveRepresentation(term);
+        switch(representation) {
+            case "string":
                 return TypeName.get(String.class);
-            case NUMBER:
+            case "number":
                 return TypeName.get(int.class);
-            case DECIMAL:
+            case "decimal":
                 return TypeName.get(double.class);
-            case BOOLEAN:
+            case "boolean":
                 return TypeName.get(boolean.class);
-            case TERM:
             default:
-                return ClassName.get(config.getJavaPackage(), capitalize(term.getName()));
+                return ClassName.get(config.getJavaPackage(), capitalize(representation));
+        }
+    }
+
+    private String resolveRepresentation(Term term) {
+        if (term.isPrimitive()) return term.getName();
+
+        var resolution = listener.getLanguage().getCategorizations().stream()
+                .filter((it) -> it.getMutant().equals(term) && it.getRelater().equals(Categorizer.IS_JUST))
+                .findFirst();
+
+        if (resolution.isPresent()) {
+            return resolveRepresentation(resolution.get().getMutation());
+        } else {
+            return term.getName();
         }
     }
 }

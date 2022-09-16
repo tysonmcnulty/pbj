@@ -4,21 +4,21 @@ public class MollyJavaGeneratorConfig {
 
     private final String javaPackage;
 
-    private MollyJavaGeneratorConfig(Builder builder) {
-        this.javaPackage = builder.javaPackage;
+    public String getJavaPackage() {
+        return javaPackage;
     }
 
     public static MollyJavaGeneratorConfig.Builder builder() {
         return new MollyJavaGeneratorConfig.Builder();
     }
 
-    public String getJavaPackage() {
-        return javaPackage;
+    private MollyJavaGeneratorConfig(Builder builder) {
+        this.javaPackage = builder.javaPackage;
     }
 
     public static class Builder {
 
-        private String javaPackage = "com.vmware.example";
+        private String javaPackage = "io.github.tysonmcnulty";
 
         public MollyJavaGeneratorConfig build() {
             return new MollyJavaGeneratorConfig(this);
