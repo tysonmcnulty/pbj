@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.text.WordUtils;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -20,9 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class MollyJavaGenerator {
 
@@ -55,7 +55,7 @@ public class MollyJavaGenerator {
                     .map((term) -> {
                         if (term.getConstraint().isPresent()) {
                             var typeSpecBuilder = TypeSpec
-                                    .enumBuilder(capitalize(term.getName()))
+                                    .enumBuilder(classNameOf(term.getName()))
                                     .addModifiers(Modifier.PUBLIC);
 
                             var enumValues = term.getConstraint().get().getValues();
@@ -84,7 +84,7 @@ public class MollyJavaGenerator {
                         } else {
                             System.out.println("\"" + term.getName() + "\"");
                             var typeSpecBuilder = TypeSpec
-                                    .classBuilder(capitalize(term.getName()))
+                                    .classBuilder(classNameOf(term.getName()))
                                     .addModifiers(Modifier.PUBLIC)
                                     .addModifiers(Modifier.ABSTRACT);
 
@@ -107,7 +107,7 @@ public class MollyJavaGenerator {
                 javaFile.writeTo(code);
 
                 CharSink sink = com.google.common.io.Files.asCharSink(outputFile.toFile(), StandardCharsets.UTF_8);
-                System.out.printf("Writing %s to %s%n", capitalize(typeSpec.name), dir);
+                System.out.printf("Writing %s to %s%n", classNameOf(typeSpec.name), dir);
                 FORMATTER.formatSource(CharSource.wrap(code), sink);
             }
         } catch (IOException e) {
@@ -126,7 +126,7 @@ public class MollyJavaGenerator {
                 case EVIDENTLY_IS:
                     mutant
                             .addMethod(MethodSpec
-                                    .methodBuilder("is" + capitalize(mutation.getName()))
+                                    .methodBuilder("is" + classNameOf(mutation.getName()))
                                     .addModifiers(Modifier.PUBLIC)
                                     .addModifiers(Modifier.ABSTRACT)
                                     .returns(TypeName.BOOLEAN)
@@ -136,7 +136,7 @@ public class MollyJavaGenerator {
                 case EVIDENTLY_HAS:
                     mutant
                             .addMethod(MethodSpec
-                                    .methodBuilder("get" + capitalize(mutation.getName()))
+                                    .methodBuilder("get" + classNameOf(mutation.getName()))
                                     .addModifiers(Modifier.PUBLIC)
                                     .addModifiers(Modifier.ABSTRACT)
                                     .returns(typeOf(mutation))
@@ -151,13 +151,14 @@ public class MollyJavaGenerator {
             var builder = buildersByTermName.get(composition.getMutant().getName());
             var mutation = composition.getMutation();
             var mutationName = mutation.getName();
-            var mutationClassName = capitalize(mutationName);
+            var mutationFieldName = fieldNameOf(mutationName);
+            var mutationClassName = classNameOf(mutationName);
             switch (composition.getRelater().getVerb()) {
                 case HAS:
                 case HAVE:
                     builder.addField(
                             typeOf(mutation),
-                            mutationName,
+                            mutationFieldName,
                             Modifier.PROTECTED);
 
                     var accessor = MethodSpec.methodBuilder("get" + mutationClassName)
@@ -168,11 +169,11 @@ public class MollyJavaGenerator {
                                 ClassName.get("java.util", "Optional"),
                                 typeOf(mutation));
                         accessor
-                                .addStatement(String.format("return Optional.ofNullable(%s)", mutationName))
+                                .addStatement(String.format("return Optional.ofNullable(%s)", mutationFieldName))
                                 .returns(optionalType);
                     } else {
                         accessor
-                                .addStatement(String.format("return %s", mutationName))
+                                .addStatement(String.format("return %s", mutationFieldName))
                                 .returns(typeOf(mutation));
                     }
 
@@ -183,14 +184,14 @@ public class MollyJavaGenerator {
                     var pluralMutationName = EnglishUtils.inflectionsOf(mutationName)[1];
                     TypeName collectionType = ParameterizedTypeName.get(
                             ClassName.get("java.util", "Collection"),
-                            ClassName.get(config.getJavaPackage(), mutationClassName));
+                            typeOf(mutation));
                     builder
                             .addField(
                                     collectionType,
                                     pluralMutationName,
                                     Modifier.PROTECTED)
                             .addMethod(
-                                    MethodSpec.methodBuilder("get" + capitalize(pluralMutationName))
+                                    MethodSpec.methodBuilder("get" + classNameOf(pluralMutationName))
                                             .addModifiers(Modifier.PUBLIC)
                                             .addStatement(String.format("return %s", pluralMutationName))
                                             .returns(collectionType)
@@ -201,7 +202,10 @@ public class MollyJavaGenerator {
 
                     builder
                             .addTypeVariable(genericType)
-                            .addField(genericType, mutationName, Modifier.PROTECTED)
+                            .addField(
+                                    genericType,
+                                    mutationName,
+                                    Modifier.PROTECTED)
                             .addMethod(MethodSpec.methodBuilder("get" + mutationClassName)
                                     .addModifiers(Modifier.PUBLIC)
                                     .addStatement(String.format("return %s", mutationName))
@@ -219,7 +223,7 @@ public class MollyJavaGenerator {
             var mutant = buildersByTermName.get(categorization.getMutant().getName());
             var mutation = categorization.getMutation();
             var mutationName = mutation.getName();
-            var mutationClassName = capitalize(mutationName);
+            var mutationClassName = classNameOf(mutationName);
             switch (categorization.getRelater()) {
                 case IS_A_KIND_OF:
                 case IS_A_TYPE_OF:
@@ -238,7 +242,7 @@ public class MollyJavaGenerator {
                                 .findFirst();
                         supertype = ParameterizedTypeName.get(
                                 ClassName.get(config.getJavaPackage(), mutationClassName),
-                                ClassName.get(config.getJavaPackage(), capitalize(innerCategorization.get().getMutation().getName()))
+                                ClassName.get(config.getJavaPackage(), classNameOf(innerCategorization.get().getMutation().getName()))
                         );
                     } else {
                         supertype = ClassName.get(config.getJavaPackage(), mutationClassName);
@@ -287,15 +291,23 @@ public class MollyJavaGenerator {
             case "boolean":
                 return TypeName.get(boolean.class);
             default:
-                return ClassName.get(config.getJavaPackage(), capitalize(representation));
+                return ClassName.get(config.getJavaPackage(), classNameOf(representation));
         }
+    }
+
+    private String classNameOf(String termName) {
+        return WordUtils.capitalizeFully(termName).replaceAll("\\W", "");
+    }
+
+    private String fieldNameOf(String termName) {
+        return WordUtils.uncapitalize(classNameOf(termName));
     }
 
     private String resolveRepresentation(Term term) {
         if (term.isPrimitive()) return term.getName();
 
         var resolution = listener.getLanguage().getCategorizations().stream()
-                .filter((it) -> it.getMutant().equals(term) && it.getRelater().equals(Categorizer.IS_JUST))
+                .filter((it) -> it.getMutant().equals(term) && Set.of(Categorizer.IS_JUST, Categorizer.ARE_JUST).contains(it.getRelater()))
                 .findFirst();
 
         if (resolution.isPresent()) {

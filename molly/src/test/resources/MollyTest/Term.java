@@ -8,7 +8,7 @@ public abstract class Term {
 
     protected Language language;
 
-    protected Constraint constraint;
+    protected ValueConstraint valueConstraint;
 
     public String getName() {
         return name;
@@ -18,8 +18,8 @@ public abstract class Term {
         return Optional.ofNullable(language);
     }
 
-    public Optional<Constraint> getConstraint() {
-        return Optional.ofNullable(constraint);
+    public Optional<ValueConstraint> getValueConstraint() {
+        return Optional.ofNullable(valueConstraint);
     }
 
     public abstract boolean isPrimitive();

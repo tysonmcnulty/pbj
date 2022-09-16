@@ -13,8 +13,8 @@
 - A term has a name, which is just a string
 - A term evidently is primitive or not
 - A term may have a language
-- A term may have a constraint
-- A constraint has many values, which are just strings
+- A term may have a value constraint
+- A value constraint has many values, which are just strings
 
 ### Relation
 - A relation has a mutant, which is just a term

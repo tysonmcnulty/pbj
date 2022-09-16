@@ -17,14 +17,14 @@ public class Language {
     }
 
     public Collection<Term> getStandaloneTerms() {
-        var predefinedTerms = getCategorizations().stream()
-                .filter(c -> c.getRelater().equals(Categorizer.IS_JUST))
+        var aliasedTerms = getCategorizations().stream()
+                .filter(c -> Set.of(Categorizer.IS_JUST, Categorizer.ARE_JUST).contains(c.getRelater()))
                 .map(Categorization::getMutant)
                 .collect(Collectors.toSet());
 
         return getTerms().stream()
                 .filter(not(Term::isPrimitive))
-                .filter(not(predefinedTerms::contains))
+                .filter(not(aliasedTerms::contains))
                 .collect(Collectors.toSet());
     }
 
