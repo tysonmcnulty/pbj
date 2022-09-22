@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import static com.vmware.pbj.molly.EnglishUtils.inflectionsOf;
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toSet;
 
 public class Language {
     Map<String, Term> termsByName = new LinkedHashMap<>();
@@ -17,15 +18,26 @@ public class Language {
     }
 
     public Collection<Term> getStandaloneTerms() {
-        var aliasedTerms = getCategorizations().stream()
+        var aliases = getCategorizations().stream()
                 .filter(c -> Set.of(Categorizer.IS_JUST, Categorizer.ARE_JUST).contains(c.getRelater()))
                 .map(Categorization::getMutant)
-                .collect(Collectors.toSet());
+                .collect(toSet());
+
+        var descriptors = getDescriptions().stream()
+                .map(Description::getMutation)
+                .collect(toSet());
+
+        var abstractions = getCompositions().stream()
+                .filter(c -> c.getRelater().getVerb().equals(Composer.Verb.HAS_SOME_KIND_OF))
+                .map(Composition::getMutation)
+                .collect(toSet());
 
         return getTerms().stream()
                 .filter(not(Term::isPrimitive))
-                .filter(not(aliasedTerms::contains))
-                .collect(Collectors.toSet());
+                .filter(not(aliases::contains))
+                .filter(not(descriptors::contains))
+                .filter(not(abstractions::contains))
+                .collect(toSet());
     }
 
     public Collection<Composition> getCompositions() {

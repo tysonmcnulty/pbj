@@ -26,8 +26,6 @@
 
 [comment]: <> (- A composer may have a qualifier)
 
-[comment]: <> (- A qualifier can only be "may" or "probably")
-
 [comment]: <> (- A composer has its verb)
 
 [comment]: <> (- A composer's verb can only be "has", "have", "has many", or "have many")
