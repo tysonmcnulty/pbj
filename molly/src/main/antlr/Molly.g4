@@ -1,70 +1,79 @@
 grammar Molly;
 
 file                     : (
-                             heading
+                             MARKDOWN_COMMENT
+                             | text
                              | relation_declaration
                              | term_declaration
                              | NEWLINE
-                         )* ;
+                         )* EOF ;
 
-heading                  : HASH+ .*? NEWLINE ;
+text                     : ~DASH ~NEWLINE* NEWLINE ;
 term_declaration         : DASH term NEWLINE ;
 relation_declaration     : DASH relation (DELIMITER? subrelation)? NEWLINE ;
 
 relation                 : categorization
                          | composition
-                         | description
-                         | enumeration ;
-categorization           : term CATEGORIZER term ;
-composition              : term composer term ;
-description              : term DESCRIBER term (DELIMITER negation)? ;
-enumeration              : term ENUMERATOR (value DELIMITER)* value ;
+                         | definition
+                         | description ;
 
-subrelation              : subcategorization
-                         | subcomposition
-                         | subdescription
-                         | subenumeration ;
-subcategorization        : SUBORDINATOR (CONTEXTUALIZER term)? CATEGORIZER term ;
-subcomposition           : SUBORDINATOR (CONTEXTUALIZER term)? composer term ;
-subdescription           : SUBORDINATOR (CONTEXTUALIZER term)? DESCRIBER term (DELIMITER negation)? ;
-subenumeration           : SUBORDINATOR (CONTEXTUALIZER term)? ENUMERATOR (value DELIMITER)* value ;
+categorization           : mutant=relation_mutant operand=categorizer mutation=categorization_mutation ;
+composition              : mutant=relation_mutant operand=composer MULTIPLIER? mutation=composition_mutation ;
+definition               : mutant=relation_mutant operand=definer mutation=definition_mutation ;
+description              : mutant=relation_mutant operand=describer mutation=description_mutation ;
 
-composer                 : QUALIFIER? COMPOSER_VERB ;
+subrelation              : subdefinition ;
+subdefinition            : SUBORDINATOR operand=definer mutation=definition_mutation ;
 
-term                     : INDEFINITE_ARTICLE? '*' term '*'
-                         | INDEFINITE_ARTICLE? '"' term '"'
-                         | WORD+ ;
-negation                 : WORD+ ;
-value                    : INDEFINITE_ARTICLE? '*' value '*'
-                         | INDEFINITE_ARTICLE? '"' value '"'
-                         | WORD+ ;
+categorizer              : IDENTITY_VERB ;
+composer                 : (OBVIATOR? QUALIFIER? COMPOSER_VERB) | (QUALIFIER? OBVIATOR? COMPOSER_VERB) ;
+definer                  : IDENTITY_VERB DEFINER ;
+describer                : (OBVIATOR? QUALIFIER? IDENTITY_VERB)
+                         | (QUALIFIER? OBVIATOR? IDENTITY_VERB )
+                         | (IDENTITY_VERB OBVIATOR?) ;
+
+relation_mutant          : unit ;
+
+categorization_mutation  : CATEGORIZER category ;
+composition_mutation     : CATEGORIZER category | unit ;
+definition_mutation      : values | unit ;
+description_mutation     : descriptor (DELIMITER negation)? ;
+
+category                 : unit ;
+unit                     : INDEFINITE_ARTICLE? (context? term) | (term context?) ;
+descriptor               : term ;
+context                  : (term '\'s') | ('of' term);
+
+negation                 : value ;
+term                     : BOXED_WORDS | WORD+ ;
+values                   : ENUMERATOR? (value DELIMITER)* value ;
+value                    : BOXED_WORDS | WORD+ ;
 
 
-MARKDOWN_COMMENT    : NEWLINE '[comment]: <> (' .*? ')' -> skip ;
+MARKDOWN_COMMENT    : '[//]: # (' .*? ')' NEWLINE -> skip ;
 WHITESPACE          : (' ' | '\t') -> skip ;
 DASH                : '-' ;
 HASH                : '#' ;
-INDEFINITE_ARTICLE  : ('a' | 'A' | 'an' | 'An') -> skip ;
+BOXED_WORDS         : '"' (WORD WHITESPACE)* WORD '"' | '*' (WORD WHITESPACE)* WORD '*' ;
+INDEFINITE_ARTICLE  : ('a' | 'A' | 'an' | 'An' | 'some' | 'Some' ) -> skip ;
+IDENTITY_VERB       : 'is' | 'are' | 'be' ;
 NEWLINE             : ('\r'? '\n' | '\r')+ ;
 DELIMITER           : (', or' | ',' | 'or' ) ;
-CATEGORIZER         : 'is a kind of'
-                    | 'is a type of'
-                    | 'is just'
-                    | 'are just' ;
-DESCRIBER           : 'evidently is'
-                    | 'evidently has' ;
-ENUMERATOR          : 'can only be' ;
-SUBORDINATOR        : 'which'
-                    | 'wherein' ;
-COMPOSER_VERB       : 'has some kind of'
-                    | 'has many'
-                    | 'has'
-                    | 'have many'
+CATEGORIZER         : 'kind of' | 'kinds of'
+                    | 'type of' | 'types of'
+                    | 'sort of' | 'sorts of' ;
+DEFINER             : 'just' ;
+OBVIATOR            : 'evidently'
+                    | 'apparently' ;
+ENUMERATOR          : 'one of'
+                    | 'either' ;
+SUBORDINATOR        : 'which' ;
+COMPOSER_VERB       : 'has'
                     | 'have' ;
-QUALIFIER           : 'may'
-                    | 'probably' ;
-CONTEXTUALIZER      : 'its' ;
-WORD                : (LOWERCASE | UPPERCASE)+ ;
+MULTIPLIER          : 'many'
+                    | 'two' ;
+QUALIFIER           : 'may' ;
+WORD                : (LOWERCASE | UPPERCASE | DASH)+ ;
 
 fragment LOWERCASE  : [a-z] ;
 fragment UPPERCASE  : [A-Z] ;

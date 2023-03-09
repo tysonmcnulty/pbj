@@ -1,36 +1,37 @@
 package com.vmware.pbj.molly;
 
-import org.antlr.v4.runtime.Token;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.List;
+import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.indexOfSubList;
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.vmware.pbj.molly.TestUtils.linesOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MollyParserTest {
 
-    List<Token> tokens = TestUtils.tokenize("Kitchen.molly");
+    @DisplayName("parse tree has all relation declarations")
+    @ParameterizedTest(name = "resource: {0}.molly")
+    @ValueSource(strings = {"PBJ", "Blackjack", "Molly"})
+    void parse_tree_has_all_declarations(String languageName) {
+        var resourceName = String.format("languages/%s.molly", languageName);
+        var expectedNumberOfDeclarations = linesOf(resourceName)
+            .filter(Pattern.compile("^-").asPredicate())
+            .count();
 
-    @Test
-    void lexer_tokenizes_relationships() {
-        assertTrue(tokens.size() > 0);
-
-        assertNotEquals(-1, indexOfSubList(
-                tokens.stream().map(Token::getText).collect(toList()),
-                asList("-", "kitchen", "has", "countertop")));
-
-        assertNotEquals(-1, indexOfSubList(
-                tokens.stream().map(Token::getText).collect(toList()),
-                asList("-", "pantry", "has many", "foods")));
+        var fileContext = TestUtils.parse(resourceName);
+        assertEquals(expectedNumberOfDeclarations, fileContext.relation_declaration().size());
     }
 
-    @Test
-    void parse_tree_has_all_declarations() {
-        MollyParser.FileContext fileContext = TestUtils.parse("Kitchen.molly");
-        assertEquals(5, fileContext.term_declaration().size());
-        assertEquals(4, fileContext.relation_declaration().size());
+    @DisplayName("parser returns the language")
+    @ParameterizedTest(name = "resource: {0}.molly")
+    @ValueSource(strings = {"PBJ"})
+    void lexer_processes_all_language_files(String languageName) {
+        var interpreter = new MollyListenerInterpreter();
+        var expected = TestLanguages.get(languageName);
+        var actual = interpreter.read(TestUtils.resource(String.format("languages/%s.molly", languageName)));
+
+        assertEquals(expected, actual);
     }
 }

@@ -22,7 +22,7 @@ dependencies {
     antlr("org.antlr:antlr4:4.9.3")
 
     implementation("org.antlr:antlr4-runtime:4.9.3")
-    implementation("org.apache.commons:commons-text:1.9")
+    implementation("org.apache.commons:commons-text:1.10.0")
     implementation("com.google.googlejavaformat:google-java-format:1.15.0")
     implementation("com.squareup:javapoet:1.13.0")
     implementation("com.hypertino:inflector_2.13:1.0.13")
@@ -46,7 +46,7 @@ tasks.register<JavaExec>("grun") {
     mainClass.set("org.antlr.v4.gui.TestRig")
     maxHeapSize = "128m"
     standardInput = System.`in`
-    args = listOf("$grammarPackageName.Molly", "file")
+    args = listOf("$grammarPackageName.Molly", "file", "-tokens")
 }
 
 tasks.named<AntlrTask>("generateGrammarSource") {

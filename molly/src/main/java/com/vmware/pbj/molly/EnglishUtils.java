@@ -1,6 +1,7 @@
 package com.vmware.pbj.molly;
 
 import com.hypertino.inflector.English;
+import org.apache.commons.text.WordUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,5 +30,11 @@ public class EnglishUtils {
     public static boolean isNegatedPair(List<String> descriptions) {
         List<String> negators = Arrays.asList("not ", "non", "un", "in");
         return descriptions.size() == 2 && negators.stream().anyMatch((n) -> descriptions.get(1).equals(n + descriptions.get(0)));
+    }
+
+    public static String normalizeCase(String str) {
+        if (str.equals(str.toUpperCase())) return str;
+
+        return WordUtils.uncapitalize(str);
     }
 }

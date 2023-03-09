@@ -14,7 +14,7 @@ public class MollyGradlePlugin implements Plugin<Project> {
     public static final Path DEFAULT_OUTPUT_DIR_LOCATION
             = Paths.get("build", "generated", "sources", "molly", "main", "java");
     public static final Path DEFAULT_INPUT_FILE_LOCATION
-            = Paths.get("src", "main", "molly", "language.molly");
+            = Paths.get("src", "main", "molly", "Language.molly");
     public static final String DEFAULT_SOURCE_SET_NAME
             = SourceSet.MAIN_SOURCE_SET_NAME;
 
@@ -22,7 +22,7 @@ public class MollyGradlePlugin implements Plugin<Project> {
     public void apply(Project project) {
         var extension = project.getExtensions().create("molly", MollyExtension.class);
 
-        project.getTasks().register("generateTerms", GenerateTermsTask.class, task -> {
+        project.getTasks().register("generateJava", GenerateJavaTask.class, task -> {
             task.getJavaPackage().set(extension.getJavaPackage());
 
             var inputFileProperty = extension.getInputFile()
@@ -45,7 +45,7 @@ public class MollyGradlePlugin implements Plugin<Project> {
         project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
             var sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
             var mollySourceSet = sourceSets.getByName(sourceSetNameProperty.get());
-            mollySourceSet.getJava().srcDir(project.getTasks().getByName("generateTerms"));
+            mollySourceSet.getJava().srcDir(project.getTasks().getByName("generateJava"));
         });
     }
 }

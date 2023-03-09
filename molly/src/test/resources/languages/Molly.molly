@@ -1,0 +1,40 @@
+### Language
+- A language has many terms
+- A language has many descriptors
+- A language has many relations
+
+### Term
+- A term has a name, which is just a string
+
+### Unit
+- A unit is a kind of term
+- A unit is evidently primitive or not primitive
+- A unit is either categorical or not categorical
+- A unit may have a context, which is just a string
+
+### Descriptor
+- A descriptor is a kind of term
+- A descriptor may have a negation, which is just a string
+
+### Relation
+- A relation has a mutant, which is just a unit
+- A relation has some kind of mutation, which is just a term
+- A relation has some kind of operand
+
+### Composition
+- A composition is a kind of relation
+- A composition's operand is just a composer
+- A composition's mutation is just a unit
+- A composition has cardinality, which is just "one to one" or "one to many"
+- A composer is either obviated or not obviated
+- A composer is either qualified or not qualified
+
+### Categorization
+- A categorization is a kind of relation
+- A categorization's operand is just a categorizer
+- A categorization's mutation is just a unit
+
+### Description
+- A description is a kind of relation
+- A description's operand is just a describer
+- A description's mutation is just a descriptor

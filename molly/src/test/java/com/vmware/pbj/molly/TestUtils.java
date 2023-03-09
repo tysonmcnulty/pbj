@@ -8,16 +8,22 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class TestUtils {
 
     public static InputStream resource(String resourceName) {
         return Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName));
+    }
+
+    public static Stream<String> linesOf(String resourceName) {
+        return new BufferedReader(new InputStreamReader(
+            TestUtils.resource(resourceName)
+        ))
+            .lines();
     }
 
     public static MollyLexer lex(String resourceName) {
