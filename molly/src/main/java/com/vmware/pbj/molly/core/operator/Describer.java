@@ -1,8 +1,8 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.operator;
 
 import java.util.Objects;
 
-public class Describer extends Operand {
+public class Describer extends Operator {
 
     private final boolean isQualified;
     private final boolean isObviated;
@@ -35,5 +35,13 @@ public class Describer extends Operand {
     @Override
     public int hashCode() {
         return Objects.hash(isQualified, isObviated);
+    }
+
+    @Override
+    public String toString() {
+        return "Describer{" +
+            "isQualified=" + isQualified +
+            ", isObviated=" + isObviated +
+            '}';
     }
 }

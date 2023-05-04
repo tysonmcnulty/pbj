@@ -26,8 +26,8 @@ public class MollyParserTest {
 
     @DisplayName("parser returns the language")
     @ParameterizedTest(name = "resource: {0}.molly")
-    @ValueSource(strings = {"PBJ"})
-    void lexer_processes_all_language_files(String languageName) {
+    @ValueSource(strings = {"PBJ", "Blackjack"})
+    void parser_returns_language(String languageName) {
         var interpreter = new MollyListenerInterpreter();
         var expected = TestLanguages.get(languageName);
         var actual = interpreter.read(TestUtils.resource(String.format("languages/%s.molly", languageName)));

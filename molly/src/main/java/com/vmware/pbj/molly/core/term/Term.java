@@ -1,6 +1,8 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.term;
 
 import java.util.Objects;
+
+import static com.vmware.pbj.molly.EnglishUtils.inflectionsOf;
 
 public abstract class Term {
     String name;
@@ -11,6 +13,10 @@ public abstract class Term {
 
     public String getName() {
         return name;
+    }
+
+    public String getPluralName() {
+        return inflectionsOf(name)[1];
     }
 
     @Override

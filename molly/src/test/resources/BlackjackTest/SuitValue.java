@@ -2,7 +2,7 @@ package io.github.tysonmcnulty;
 
 import java.lang.String;
 
-public enum Suit {
+public enum SuitValue {
     CLUB("club"),
 
     DIAMOND("diamond"),
@@ -13,7 +13,7 @@ public enum Suit {
 
     private final String label;
 
-    private Suit(String label) {
+    private SuitValue(String label) {
         this.label = label;
     }
 

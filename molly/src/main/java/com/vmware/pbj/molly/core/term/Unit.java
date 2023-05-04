@@ -1,8 +1,8 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.term;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.vmware.pbj.molly.EnglishUtils.inflectionsOf;
 
@@ -23,11 +23,7 @@ public class Unit extends Term {
     }
 
     public boolean isPrimitive() {
-        return primitives.contains(this);
-    }
-
-    public String getPluralName() {
-        return inflectionsOf(name)[1];
+        return primitives.containsValue(this);
     }
 
     public static Unit fromInflectedName(String inflectedName) {
@@ -42,11 +38,11 @@ public class Unit extends Term {
             '}';
     }
 
-    public static final Set<Unit> primitives = Set.of(
-        new Unit("string"),
-        new Unit("number"),
-        new Unit("decimal"),
-        new Unit("boolean")
+    public static final Map<String, Unit> primitives = Map.of(
+        "string", new Unit("string"),
+        "number", new Unit("number"),
+        "decimal", new Unit("decimal"),
+        "boolean", new Unit("boolean")
     );
 
     @Override

@@ -1,4 +1,8 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.relation;
+
+import com.vmware.pbj.molly.core.operator.Describer;
+import com.vmware.pbj.molly.core.term.Descriptor;
+import com.vmware.pbj.molly.core.term.Unit;
 
 public class Description extends Relation<Describer, Descriptor> {
 
@@ -8,7 +12,7 @@ public class Description extends Relation<Describer, Descriptor> {
 
     public Description(Unit mutant, Describer operand, Descriptor mutation) {
         this.mutant = mutant;
-        this.operand = operand;
+        this.operator = operand;
         this.mutation = mutation;
     }
 }

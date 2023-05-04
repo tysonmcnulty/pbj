@@ -1,4 +1,4 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.relation;
 
 public enum Cardinality {
     ONE_TO_ONE,

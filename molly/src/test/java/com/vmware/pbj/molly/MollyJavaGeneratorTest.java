@@ -26,7 +26,7 @@ public class MollyJavaGeneratorTest {
 
     @DisplayName("writer writes all java files for language")
     @ParameterizedTest(name = "{0}.molly ==> {0}Test/*.java")
-    @ValueSource(strings = {"PBJ"})
+    @ValueSource(strings = {"PBJ", "Blackjack"})
     public void writer_writes_all_java_files_for_kitchen(String languageName) throws IOException {
         Language language = TestLanguages.get(languageName);
 

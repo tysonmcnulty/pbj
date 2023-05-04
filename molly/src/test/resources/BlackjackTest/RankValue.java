@@ -2,7 +2,7 @@ package io.github.tysonmcnulty;
 
 import java.lang.String;
 
-public enum Rank {
+public enum RankValue {
     ACE("ace"),
 
     TWO("two"),
@@ -31,7 +31,7 @@ public enum Rank {
 
     private final String label;
 
-    private Rank(String label) {
+    private RankValue(String label) {
         this.label = label;
     }
 

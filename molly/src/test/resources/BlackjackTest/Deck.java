@@ -2,7 +2,7 @@ package io.github.tysonmcnulty;
 
 import java.util.Collection;
 
-public abstract class Deck {
+public class Deck {
     protected Collection<Card> cards;
 
     public Collection<Card> getCards() {

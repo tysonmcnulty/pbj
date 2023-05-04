@@ -2,12 +2,9 @@ package com.vmware.pbj.molly.write;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.vmware.pbj.molly.core.Term;
-import com.vmware.pbj.molly.core.Unit;
+import com.vmware.pbj.molly.core.term.Unit;
 import org.apache.commons.text.WordUtils;
 
-import java.util.Map;
 import java.util.function.Function;
 
 public class Syntax {
@@ -22,18 +19,15 @@ public class Syntax {
 
     public static class TypeNameResolver implements Function<Unit, TypeName> {
 
-        private final Map<String, TypeSpec.Builder> buildersByName;
         private final MollyJavaGeneratorConfig config;
 
-        public TypeNameResolver(Map<String, TypeSpec.Builder> buildersByName, MollyJavaGeneratorConfig config) {
-            this.buildersByName = buildersByName;
+        public TypeNameResolver(MollyJavaGeneratorConfig config) {
             this.config = config;
         }
 
         @Override
         public TypeName apply(Unit unit) {
-            var representation = resolveRepresentation(unit);
-            switch (representation) {
+            switch (unit.getName()) {
                 case "string":
                     return TypeName.get(String.class);
                 case "number":
@@ -44,15 +38,16 @@ public class Syntax {
                     return TypeName.get(boolean.class);
                 default:
                     if (unit.getContext().isPresent()) {
-                        return ClassName.get(config.getJavaPackage(), classNameOf(unit.getContext().get()), classNameOf(representation));
+                        return ClassName.get(
+                            config.getJavaPackage(),
+                            classNameOf(unit.getContext().get()),
+                            classNameOf(unit.getName()));
                     } else {
-                        return ClassName.get(config.getJavaPackage(), classNameOf(representation));
+                        return ClassName.get(
+                            config.getJavaPackage(),
+                            classNameOf(unit.getName()));
                     }
             }
-        }
-
-        private String resolveRepresentation(Term term) {
-            return term.getName();
         }
     }
 }

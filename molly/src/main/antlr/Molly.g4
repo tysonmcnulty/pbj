@@ -17,13 +17,13 @@ relation                 : categorization
                          | definition
                          | description ;
 
-categorization           : mutant=relation_mutant operand=categorizer mutation=categorization_mutation ;
-composition              : mutant=relation_mutant operand=composer MULTIPLIER? mutation=composition_mutation ;
-definition               : mutant=relation_mutant operand=definer mutation=definition_mutation ;
-description              : mutant=relation_mutant operand=describer mutation=description_mutation ;
+categorization           : mutant=relation_mutant operator=categorizer mutation=categorization_mutation ;
+composition              : mutant=relation_mutant operator=composer MULTIPLIER? mutation=composition_mutation ;
+definition               : mutant=relation_mutant operator=definer mutation=definition_mutation ;
+description              : mutant=relation_mutant operator=describer mutation=description_mutation ;
 
 subrelation              : subdefinition ;
-subdefinition            : SUBORDINATOR operand=definer mutation=definition_mutation ;
+subdefinition            : SUBORDINATOR operator=definer mutation=definition_mutation ;
 
 categorizer              : IDENTITY_VERB ;
 composer                 : (OBVIATOR? QUALIFIER? COMPOSER_VERB) | (QUALIFIER? OBVIATOR? COMPOSER_VERB) ;
@@ -37,7 +37,7 @@ relation_mutant          : unit ;
 categorization_mutation  : CATEGORIZER category ;
 composition_mutation     : CATEGORIZER category | unit ;
 definition_mutation      : values | unit ;
-description_mutation     : descriptor (DELIMITER negation)? ;
+description_mutation     : PREDELIMITER? descriptor (DELIMITER negation)? ;
 
 category                 : unit ;
 unit                     : INDEFINITE_ARTICLE? (context? term) | (term context?) ;
@@ -46,7 +46,7 @@ context                  : (term '\'s') | ('of' term);
 
 negation                 : value ;
 term                     : BOXED_WORDS | WORD+ ;
-values                   : ENUMERATOR? (value DELIMITER)* value ;
+values                   : PREDELIMITER? (value DELIMITER)+ value ;
 value                    : BOXED_WORDS | WORD+ ;
 
 
@@ -59,19 +59,23 @@ INDEFINITE_ARTICLE  : ('a' | 'A' | 'an' | 'An' | 'some' | 'Some' ) -> skip ;
 IDENTITY_VERB       : 'is' | 'are' | 'be' ;
 NEWLINE             : ('\r'? '\n' | '\r')+ ;
 DELIMITER           : (', or' | ',' | 'or' ) ;
+PREDELIMITER        : 'either'
+                    | 'one of' ;
 CATEGORIZER         : 'kind of' | 'kinds of'
                     | 'type of' | 'types of'
                     | 'sort of' | 'sorts of' ;
 DEFINER             : 'just' ;
 OBVIATOR            : 'evidently'
                     | 'apparently' ;
-ENUMERATOR          : 'one of'
-                    | 'either' ;
 SUBORDINATOR        : 'which' ;
 COMPOSER_VERB       : 'has'
                     | 'have' ;
 MULTIPLIER          : 'many'
-                    | 'two' ;
+                    | 'several'
+                    | 'zero or more'
+                    | 'one or more'
+                    | 'two'
+                    | 'three' ;
 QUALIFIER           : 'may' ;
 WORD                : (LOWERCASE | UPPERCASE | DASH)+ ;
 

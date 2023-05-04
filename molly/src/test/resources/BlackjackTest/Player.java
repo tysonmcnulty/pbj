@@ -3,7 +3,7 @@ package io.github.tysonmcnulty;
 import java.util.Collection;
 import java.util.Optional;
 
-public abstract class Player {
+public class Player {
     protected Collection<Chip> chips;
 
     protected Hand hand;

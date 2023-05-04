@@ -1,8 +1,19 @@
 package com.vmware.pbj.molly;
 
 import com.vmware.pbj.molly.core.*;
+import com.vmware.pbj.molly.core.operator.Composer;
+import com.vmware.pbj.molly.core.operator.Describer;
+import com.vmware.pbj.molly.core.relation.Categorization;
+import com.vmware.pbj.molly.core.relation.Composition;
+import com.vmware.pbj.molly.core.relation.Definition;
+import com.vmware.pbj.molly.core.relation.Description;
+import com.vmware.pbj.molly.core.term.Descriptor;
+import com.vmware.pbj.molly.core.term.Enumeration;
+import com.vmware.pbj.molly.core.term.Unit;
 
 import java.util.List;
+
+import static com.vmware.pbj.molly.core.relation.Cardinality.ONE_TO_MANY;
 
 public class TestLanguages {
 
@@ -28,7 +39,7 @@ public class TestLanguages {
         );
         var relations = List.of(
             new Composition(kitchen, countertop),
-            new Composition.Builder(pantry, food).cardinality(Cardinality.ONE_TO_MANY).build(),
+            new Composition.Builder(pantry, food).cardinality(ONE_TO_MANY).build(),
             new Categorization(bread, food),
             new Description(bread, sealed)
         );
@@ -64,13 +75,13 @@ public class TestLanguages {
         );
 
         var relations = List.of(
-            new Composition.Builder(pbj, slice).cardinality(Cardinality.ONE_TO_MANY).build(),
+            new Composition.Builder(pbj, slice).cardinality(ONE_TO_MANY).build(),
             new Composition(pbj, peanutButter),
             new Composition(pbj, jelly),
             new Composition.Builder(jar, spread).categorical(true).build(),
             new Categorization(peanutButter, spread),
             new Categorization(jelly, spread),
-            new Composition.Builder(loaf, slice).cardinality(Cardinality.ONE_TO_MANY).build()
+            new Composition.Builder(loaf, slice).cardinality(ONE_TO_MANY).build()
         );
 
         units.forEach(language::addUnit);
@@ -79,9 +90,97 @@ public class TestLanguages {
         return language;
     }
 
+    public static Language blackjack() {
+        var language = new Language();
+
+        var deck = new Unit("deck");
+        var card = new Unit("card");
+        var shoe = new Unit("shoe");
+        var rank = new Unit("rank");
+        var rankValue = new Enumeration.Builder("rank value")
+            .values("ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king")
+            .build();
+        var suit = new Unit("suit");
+        var suitValue = new Enumeration.Builder("suit value")
+            .values("club", "diamond", "heart", "spade")
+            .build();
+        var hand = new Unit("hand");
+        var player = new Unit("player");
+        var chip = new Unit("chip");
+        var value = new Unit("value");
+        var dealer = new Unit("dealer");
+        var table = new Unit("table");
+
+        var soft = new Descriptor("soft", "hard");
+
+        var units = List.of(
+            deck,
+            card,
+            shoe,
+            rank,
+            rankValue,
+            suit,
+            suitValue,
+            hand,
+            value,
+            player,
+            chip,
+            dealer,
+            table
+        );
+
+        var descriptors = List.of(
+            soft
+        );
+
+        var relations = List.of(
+            new Composition.Builder(deck, card)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition.Builder(shoe, card)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition(card, rank),
+            new Definition(rank, rankValue),
+            new Composition(card, suit),
+            new Definition(suit, suitValue),
+            new Composition.Builder(hand, card)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition.Builder(hand, value)
+                .composer(new Composer(false, true))
+                .build(),
+            new Definition(value, new Unit("number")),
+            new Description(hand, new Describer(false, true), soft),
+            new Composition.Builder(player, chip)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition.Builder(player, hand)
+                .composer(new Composer(true, false))
+                .build(),
+            new Composition(chip, value),
+            new Composition.Builder(dealer, hand)
+                .composer(new Composer(true, false))
+                .build(),
+            new Composition.Builder(table, player)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition(table, dealer),
+            new Composition(table, shoe)
+        );
+
+        units.forEach(language::addUnit);
+        descriptors.forEach(language::addDescriptor);
+        relations.forEach(language::addRelation);
+
+        return language;
+    }
+
     public static Language get(String languageName) {
-        if (languageName.equalsIgnoreCase("kitchen")) return kitchen();
-        if (languageName.equalsIgnoreCase("pbj")) return pbj();
+        var key = languageName.toLowerCase();
+        if (key.equals("kitchen")) return kitchen();
+        if (key.equals("pbj")) return pbj();
+        if (key.equals("blackjack")) return blackjack();
         return null;
     }
 }

@@ -1,15 +1,15 @@
 package io.github.tysonmcnulty;
 
-public abstract class Card {
-    protected Rank rank;
+public class Card {
+    protected RankValue rank;
 
-    protected Suit suit;
+    protected SuitValue suit;
 
-    public Rank getRank() {
+    public RankValue getRank() {
         return rank;
     }
 
-    public Suit getSuit() {
+    public SuitValue getSuit() {
         return suit;
     }
 }

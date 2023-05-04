@@ -2,7 +2,7 @@ package io.github.tysonmcnulty;
 
 import java.util.Collection;
 
-public abstract class Table {
+public class Table {
     protected Collection<Player> players;
 
     protected Dealer dealer;

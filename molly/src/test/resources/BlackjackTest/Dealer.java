@@ -2,7 +2,7 @@ package io.github.tysonmcnulty;
 
 import java.util.Optional;
 
-public abstract class Dealer {
+public class Dealer {
     protected Hand hand;
 
     public Optional<Hand> getHand() {

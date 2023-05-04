@@ -1,8 +1,8 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.operator;
 
 import java.util.Objects;
 
-public class Composer extends Operand {
+public class Composer extends Operator {
 
     private final boolean isQualified;
     private final boolean isObviated;

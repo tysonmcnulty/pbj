@@ -7,8 +7,12 @@ import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import com.vmware.pbj.molly.core.*;
+import com.vmware.pbj.molly.core.Language;
+import com.vmware.pbj.molly.core.relation.*;
+import com.vmware.pbj.molly.core.term.Enumeration;
+import com.vmware.pbj.molly.core.term.Unit;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -41,21 +45,24 @@ public class MollyJavaGenerator {
 
     public void write(Path dir) {
         try {
-            Map<String, TypeSpec.Builder> buildersByName = language.getUnits()
-                .map((unit) -> {
-                    var typeSpecBuilder = TypeSpec
-                        .classBuilder(classNameOf(unit.getName()))
-                        .addModifiers(Modifier.PUBLIC);
+            var definitionMutants = language.getRelations().stream()
+                .filter(r -> r instanceof Definition)
+                .map(Relation::getMutant)
+                .collect(Collectors.toSet());
 
-                    return Map.entry(unit.getName(), typeSpecBuilder);
-                })
+            var unitsToWrite = language.getUnits()
+                .filter((unit) -> !definitionMutants.contains(unit))
+                .collect(Collectors.toList());
+
+            Map<String, TypeSpec.Builder> buildersByName = unitsToWrite.stream()
+                .map((unit) -> Map.entry(unit.getName(), createTypeSpecBuilder(unit)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
 
             language.getRelations().forEach((relation) -> {
                 apply(relation, buildersByName);
             });
 
-            language.getUnits().forEach(unit -> {
+            unitsToWrite.forEach(unit -> {
                 if (unit.getContext().isPresent()) {
                     var outerContextBuilder = buildersByName.computeIfAbsent(
                         unit.getContext().get(),
@@ -88,15 +95,49 @@ public class MollyJavaGenerator {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (FormatterException fe) {
-
             throw new RuntimeException(fe);
         }
+    }
+
+    private TypeSpec.Builder createTypeSpecBuilder(Unit unit) {
+        return (unit instanceof Enumeration)
+            ? createEnumBuilder((Enumeration) unit)
+            : TypeSpec
+                .classBuilder(classNameOf(unit.getName()))
+                .addModifiers(Modifier.PUBLIC);
+    }
+    private TypeSpec.Builder createEnumBuilder(Enumeration enumeration) {
+        var typeSpecBuilder = TypeSpec
+            .enumBuilder(classNameOf(enumeration.getName()))
+            .addModifiers(Modifier.PUBLIC);
+
+        for (var v: enumeration.getValues()) {
+            typeSpecBuilder.addEnumConstant(
+                v.toUpperCase(),
+                TypeSpec.anonymousClassBuilder("$S", v).build()
+            );
+        }
+
+        typeSpecBuilder
+            .addField(String.class, "label", Modifier.PRIVATE, Modifier.FINAL)
+            .addMethod(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
+                .addParameter(String.class, "label")
+                .addStatement("this.label = label")
+                .build())
+            .addMethod(MethodSpec.methodBuilder("getLabel")
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return label")
+                .returns(String.class)
+                .build());
+
+        return typeSpecBuilder;
     }
 
     private void apply(Relation<?, ?> relation, Map<String, TypeSpec.Builder> buildersByName) {
         var builder = buildersByName.get(relation.getMutant().getName());
         if (relation instanceof Composition) {
-            Relations.applyComposition((Composition) relation, builder, new Syntax.TypeNameResolver(buildersByName, config));
+            Relations.applyComposition((Composition) relation, builder, language, config);
         } else if (relation instanceof Categorization) {
             Relations.applyCategorization((Categorization) relation, builder, config);
         } else if (relation instanceof Description) {

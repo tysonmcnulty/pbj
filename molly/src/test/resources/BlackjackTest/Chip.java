@@ -1,6 +1,6 @@
 package io.github.tysonmcnulty;
 
-public abstract class Chip {
+public class Chip {
     protected int value;
 
     public int getValue() {

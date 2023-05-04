@@ -1,4 +1,7 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.relation;
+
+import com.vmware.pbj.molly.core.operator.Categorizer;
+import com.vmware.pbj.molly.core.term.Unit;
 
 public class Categorization extends Relation<Categorizer, Unit> {
 
@@ -15,7 +18,7 @@ public class Categorization extends Relation<Categorizer, Unit> {
         Unit mutation
     ) {
         this.mutant = mutant;
-        this.operand = categorizer;
+        this.operator = categorizer;
         this.mutation = mutation;
     }
 }

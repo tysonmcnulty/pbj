@@ -12,4 +12,8 @@ public abstract class Hand {
     public abstract int getValue();
 
     public abstract boolean isSoft();
+
+    public boolean isHard() {
+        return !this.isSoft();
+    }
 }

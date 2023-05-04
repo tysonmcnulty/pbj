@@ -1,4 +1,7 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.relation;
+
+import com.vmware.pbj.molly.core.operator.Composer;
+import com.vmware.pbj.molly.core.term.Unit;
 
 import java.util.Objects;
 
@@ -21,7 +24,7 @@ public class Composition extends Relation<Composer, Unit> {
         boolean isCategorical
     ) {
         this.mutant = mutant;
-        this.operand = composer;
+        this.operator = composer;
         this.mutation = mutation;
         this.cardinality = cardinality;
         this.isCategorical = isCategorical;
@@ -90,7 +93,7 @@ public class Composition extends Relation<Composer, Unit> {
             "cardinality=" + cardinality +
             ", isCategorical=" + isCategorical +
             ", mutant=" + mutant +
-            ", operand=" + operand +
+            ", operand=" + operator +
             ", mutation=" + mutation +
             '}';
     }

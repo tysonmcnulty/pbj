@@ -1,6 +1,12 @@
 package com.vmware.pbj.molly.core;
 
+import com.vmware.pbj.molly.core.relation.Definition;
+import com.vmware.pbj.molly.core.relation.Relation;
+import com.vmware.pbj.molly.core.term.Descriptor;
+import com.vmware.pbj.molly.core.term.Unit;
+
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Language {
@@ -31,6 +37,8 @@ public class Language {
     }
 
     public void addUnit(Unit unit) {
+        if (Unit.primitives.containsValue(unit)) return;
+
         unitsByName.putIfAbsent(unit.getName(), unit);
         unitsByName.putIfAbsent(unit.getPluralName(), unit);
 
@@ -56,7 +64,27 @@ public class Language {
         return this.relations;
     }
 
+    public Unit representationOf(Unit unit) {
+        var definitions = getRelations().stream()
+            .filter(r -> r instanceof Definition)
+            .collect(Collectors.toMap(r -> r.getMutant().getName(), r -> (Definition) r));
+        var definitionMutants = definitions.values().stream()
+            .map(Relation::getMutant)
+            .collect(Collectors.toSet());
+        var representation = unit;
+
+        while (definitionMutants.contains(representation)) {
+            representation = definitions.get(representation.getName()).getMutation();
+        }
+
+        return representation;
+    }
+
     public Unit getUnitByName(String unitName) {
+        if (Unit.primitives.containsKey(unitName)) {
+            return Unit.primitives.get(unitName);
+        }
+
         return unitsByName.get(unitName);
     }
 

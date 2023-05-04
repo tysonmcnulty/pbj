@@ -1,4 +1,4 @@
-package com.vmware.pbj.molly.core;
+package com.vmware.pbj.molly.core.term;
 
 import java.util.Objects;
 import java.util.Optional;

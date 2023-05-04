@@ -8,8 +8,7 @@
 ### Card
 - A card has a rank
 - A rank is just one of "ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", or "king"
-- A card has a suit
-- A suit is just one of "club", "diamond", "heart", or "spade"
+- A card has a suit, which is just one of "club", "diamond", "heart", or "spade"
 
 ### Hand
 - A hand has many cards
