@@ -2,45 +2,31 @@
 
 ## Installation
 
-There is no external release artifact yet for this project. To play around with it, you'll need to resolve the `molly-gradle-plugin` dependency locally. 
-
-If you'd like to play around with a preconfigured example, check out the [`feature`](./feature) project.
-
-If you'd like to do it yourself, follow the instructions below to create a sample Gradle-based Java project. The example uses the Gradle Kotlin DSL, a Java package of `com.example`, and a project name of `example`, but you are free to change those details if you choose.
-
-1. Create your project in a subdirectory of the monorepo (i.e., one level above this README).
-
-   ```shell
-   export MONOREPO_ROOT=$(git rev-parse --show-toplevel)
-   cd $MONOREPO_ROOT
-   mkdir example
-   cd example
-   gradle init \
-     --project-name=example \
-     --type=java-application \
-     --test-framework=junit-jupiter \
-     --dsl=kotlin \
-     --package=com.example \
-     --incubating
-   ```
-
-1. Add the following line to the `settings.gradle.kts` in the new project:
-
-   ```
-   includeBuild("../molly-gradle-plugin")
-   ```
-
-1. Add the following to the generated `app/build.gradle.kts` in the new project:
+1. Add a repository for the Molly Gradle plugin to your settings file:
 
    ```kotlin
-   buildscript {
-     dependencies {
-       classpath("com.vmware.pbj.molly", "molly-gradle-plugin", "0.0.1-SNAPSHOT")
-     }
+   // settings.gradle.kts
+   pluginManagement {
+       repositories {
+           maven {
+               name = "MollyGradlePluginRepository"
+               url = uri("https://maven.pkg.github.com/tysonmcnulty/pbj")
+               credentials {
+                   username = System.getenv("GITHUB_ACTOR")
+                   password = System.getenv("GITHUB_TOKEN")
+               }
+           }
+           gradlePluginPortal()
+       }
    }
+   ```
 
+1. Include and configure the Molly Gradle plugin in your build file:
+
+   ```kotlin
+   // build.gradle.kts
    plugins {
-     id("molly-gradle-plugin")
+     id("molly-gradle-plugin") version "0.0.1-SNAPSHOT"
    }
    
    molly {
@@ -48,20 +34,45 @@ If you'd like to do it yourself, follow the instructions below to create a sampl
    }
    ```
    
-1. Create a language file. Save it as `app/src/main/molly/Language.molly`:
+1. Create a language file at the `src/main/molly/Language.molly` location:
 
    ```markdown
    - foo
    - bar
    - baz
    ```
+
+## Usage
+
+1. [Authenticate to GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages). Store your credentials in the shell environment where you run Gradle commands:
    
-1. Run the `generateJava` Gradle task in the new project subdirectory:
+   ```shell
+   export GITHUB_ACTOR=<replace with your GitHub username>
+   export GITHUB_TOKEN=<replace with your GitHub personal access token>
+   ```
+
+1. Run the `generateJava` Gradle task:
 
    ```shell
    ./gradlew generateJava
    ```
 
-1. View your generated files at `build/generated/sources/molly/com/example`.
+   Your generated files appear in your configured `outputDir` directory (`build/generated/sources/molly` by default).
 
 ## Configuration
+
+The plugin accepts the following parameters:
+
+- `inputFile`: the file containing your language definition.
+- `javaPackage`: the Java package for your generated source files
+- `outputDir`: the root directory where Molly writes your generated source files
+
+The following configuration is equivalent to the default configuration for the plugin:
+
+```kotlin
+molly {
+    inputFile.set(file("src/main/molly/Language.molly"))
+    javaPackage.set("io.github.tysonmcnulty")
+    outputDir.set(dir("build/generated/sources/molly/main/java"))
+}
+```

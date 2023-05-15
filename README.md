@@ -79,6 +79,10 @@ public class Jar<T extends Spread> {
 }
 ```
 
+## Usage
+
+See the [`molly-gradle-plugin` project](./molly-gradle-plugin/README.md) for instructions on how to use Molly in a Gradle project.
+
 ## Goals
 
 We hope this project helps you:
