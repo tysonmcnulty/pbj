@@ -1,8 +1,14 @@
 package com.vmware.pbj.molly.write;
 
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.annotations.ReturnValuesAreNonnullByDefault;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.RangeSet;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
@@ -14,15 +20,22 @@ import com.vmware.pbj.molly.core.relation.*;
 import com.vmware.pbj.molly.core.term.Enumeration;
 import com.vmware.pbj.molly.core.term.Unit;
 
+import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static com.diffplug.spotless.Formatter.NO_FILE_SENTINEL;
 import static com.vmware.pbj.molly.write.Syntax.classNameOf;
 
 public class MollyJavaGenerator {
@@ -87,15 +100,41 @@ public class MollyJavaGenerator {
 
                 StringBuilder code = new StringBuilder();
                 javaFile.writeTo(code);
+                var formatterStep = GoogleJavaFormatStep.create("1.17.0", "AOSP", new Provisioner() {
+                        @Override
+                        @Nonnull
+                        public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
+                            return Stream.of(
+                                Formatter.class,
+                                RangeSet.class
+                            ).map(
+                                (Class<?> c) -> {
+                                    try {
+                                        var sourceLocation = c.getProtectionDomain().getCodeSource().getLocation();
+                                        return Paths.get(sourceLocation.toURI()).toFile();
+                                    } catch (URISyntaxException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }).collect(Collectors.toSet());
+
+                        }
+                    });
+
+                var formatted = Objects.requireNonNull(
+                    formatterStep.format(code.toString(),
+                        NO_FILE_SENTINEL)
+                );
 
                 CharSink sink = com.google.common.io.Files.asCharSink(outputFile.toFile(), StandardCharsets.UTF_8);
                 System.out.printf("Writing %s to %s%n", typeSpec.name, dir);
-                FORMATTER.formatSource(CharSource.wrap(code), sink);
+                sink.write(formatted);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (FormatterException fe) {
             throw new RuntimeException(fe);
+        } catch (Exception e) {
+            throw new UncheckedExecutionException(e);
         }
     }
 

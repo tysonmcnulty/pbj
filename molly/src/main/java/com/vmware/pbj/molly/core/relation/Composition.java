@@ -93,7 +93,7 @@ public class Composition extends Relation<Composer, Unit> {
             "cardinality=" + cardinality +
             ", isCategorical=" + isCategorical +
             ", mutant=" + mutant +
-            ", operand=" + operator +
+            ", operator=" + operator +
             ", mutation=" + mutation +
             '}';
     }

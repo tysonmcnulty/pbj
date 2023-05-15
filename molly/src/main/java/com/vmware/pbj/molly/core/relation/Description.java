@@ -10,9 +10,9 @@ public class Description extends Relation<Describer, Descriptor> {
         this(mutant, new Describer(), mutation);
     }
 
-    public Description(Unit mutant, Describer operand, Descriptor mutation) {
+    public Description(Unit mutant, Describer operator, Descriptor mutation) {
         this.mutant = mutant;
-        this.operator = operand;
+        this.operator = operator;
         this.mutation = mutation;
     }
 }

@@ -40,7 +40,7 @@ public abstract class Relation<T extends Operator, U extends Term> {
     public String toString() {
         return "Relation{" +
             "mutant=" + mutant +
-            ", operand=" + operator +
+            ", operator=" + operator +
             ", mutation=" + mutation +
             '}';
     }

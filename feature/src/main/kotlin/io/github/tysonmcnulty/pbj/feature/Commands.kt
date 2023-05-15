@@ -1,6 +1,6 @@
-package com.vmware.pbj
+package io.github.tysonmcnulty.pbj.feature
 
-import com.vmware.pbj.core.model.*
+import io.github.tysonmcnulty.pbj.feature.core.model.*
 
 fun makePbj(bread: Bread.Loaf, jellyJar: Jar<Jelly>, peanutButterJar: Jar<PeanutButter>): PBJ {
     return PBJ()

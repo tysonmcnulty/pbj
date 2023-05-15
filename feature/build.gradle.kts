@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     dependencies {
-        classpath("com.vmware.pbj.molly", "molly-gradle-plugin", "0.0.1-SNAPSHOT")
+        classpath("io.github.tysonmcnulty.pbj", "molly-gradle-plugin", "0.0.1-SNAPSHOT")
     }
 }
 
@@ -19,7 +19,7 @@ java {
 }
 
 molly {
-    javaPackage.set("com.vmware.pbj.core.model")
+    javaPackage.set("io.github.tysonmcnulty.pbj.feature.core.model")
 }
 
 repositories {

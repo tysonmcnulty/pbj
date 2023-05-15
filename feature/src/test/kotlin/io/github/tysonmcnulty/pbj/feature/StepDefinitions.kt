@@ -1,7 +1,7 @@
-package com.vmware.pbj.feature
+package io.github.tysonmcnulty.pbj.feature
 
-import com.vmware.pbj.core.model.*
-import com.vmware.pbj.makePbj
+import io.github.tysonmcnulty.pbj.feature.core.model.*
+import io.github.tysonmcnulty.pbj.feature.makePbj
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When

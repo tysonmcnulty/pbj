@@ -1,6 +1,5 @@
 package io.github.tysonmcnulty;
 
-import java.lang.String;
 
 public enum RankValue {
     ACE("ace"),

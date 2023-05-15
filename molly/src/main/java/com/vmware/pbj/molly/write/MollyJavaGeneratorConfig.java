@@ -1,6 +1,8 @@
 package com.vmware.pbj.molly.write;
 
-public class MollyJavaGeneratorConfig {
+import java.io.Serializable;
+
+public class MollyJavaGeneratorConfig implements Serializable {
 
     private final String javaPackage;
 

@@ -32,11 +32,10 @@ public class MollyGradlePlugin implements Plugin<Project> {
             task.getInputFile().set(inputFileProperty);
 
             var outputDirProperty = extension.getOutputDir()
-                    .convention(project.getLayout().getProjectDirectory().file(
+                    .convention(project.getLayout().getProjectDirectory().dir(
                             DEFAULT_OUTPUT_DIR_LOCATION.toString()));
 
             task.getOutputDir().set(outputDirProperty);
-
         });
 
         var sourceSetNameProperty = extension.getSourceSetName()

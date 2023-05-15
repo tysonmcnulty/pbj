@@ -1,8 +1,9 @@
 plugins {
     `java-gradle-plugin`
+    `maven-publish`
 }
 
-group = "com.vmware.pbj.molly"
+group = "io.github.tysonmcnulty.pbj"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -24,5 +25,18 @@ repositories {
 }
 
 dependencies {
-    implementation("org.vmware.pbj.molly:molly:0.0.1-SNAPSHOT")
+    implementation("io.github.tysonmcnulty.pbj:molly:0.0.1-SNAPSHOT")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tysonmcnulty/pbj")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }

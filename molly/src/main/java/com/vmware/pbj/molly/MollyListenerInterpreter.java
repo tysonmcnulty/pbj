@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Array;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -110,7 +111,13 @@ public class MollyListenerInterpreter extends MollyBaseListener {
         String descriptorNameCandidate = termNameOf(ctx.descriptor().term());
         if (descriptorNameCandidate.isEmpty()) return;
 
-        String negation = valueOf(ctx.negation().value());
+        var negationValue = valueOf(ctx.negation().value());
+        String negation = List.of(
+            "not",
+            String.join(" ", "not", descriptorNameCandidate))
+        .contains(negationValue)
+            ? null
+            : negationValue;
 
         this.language.addDescriptor(new Descriptor(descriptorNameCandidate, negation));
     }

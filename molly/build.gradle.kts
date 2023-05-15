@@ -4,9 +4,10 @@ plugins {
     java
     antlr
     idea
+    `maven-publish`
 }
 
-group = "org.vmware.pbj.molly"
+group = "io.github.tysonmcnulty.pbj"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -21,14 +22,17 @@ repositories {
 dependencies {
     antlr("org.antlr:antlr4:4.9.3")
 
+    api("org.slf4j:slf4j-api:2.0.7")
+
     implementation("org.antlr:antlr4-runtime:4.9.3")
     implementation("org.apache.commons:commons-text:1.10.0")
-    implementation("com.google.googlejavaformat:google-java-format:1.15.0")
+    implementation("com.google.googlejavaformat:google-java-format:1.17.0")
     implementation("com.squareup:javapoet:1.13.0")
     implementation("com.hypertino:inflector_2.13:1.0.13")
+    implementation("com.diffplug.spotless:spotless-lib:2.38.0")
 
     testImplementation(platform("org.junit:junit-bom:5.7.0"))
-    testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework:spring-core:5.3.21")
 }
@@ -70,5 +74,24 @@ tasks.named<Test>("test") {
 idea {
     module {
         generatedSourceDirs = generatedSourceDirs + file("generated-src/antlr/main/")
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("default") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tysonmcnulty/pbj")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }

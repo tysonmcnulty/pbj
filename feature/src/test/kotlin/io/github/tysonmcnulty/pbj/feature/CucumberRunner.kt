@@ -1,4 +1,4 @@
-package com.vmware.pbj.feature
+package io.github.tysonmcnulty.pbj.feature
 
 import io.cucumber.core.options.Constants
 import org.junit.platform.suite.api.ConfigurationParameter

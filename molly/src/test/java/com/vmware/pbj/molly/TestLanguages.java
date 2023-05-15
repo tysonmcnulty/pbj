@@ -150,7 +150,7 @@ public class TestLanguages {
             new Composition.Builder(hand, value)
                 .composer(new Composer(false, true))
                 .build(),
-            new Definition(value, new Unit("number")),
+            new Definition(value, Unit.primitives.get("number")),
             new Description(hand, new Describer(false, true), soft),
             new Composition.Builder(player, chip)
                 .cardinality(ONE_TO_MANY)
@@ -176,11 +176,70 @@ public class TestLanguages {
         return language;
     }
 
+    public static Language molly() {
+        var molly = new Language();
+
+        var language = new Unit("language");
+        var term = new Unit("term");
+        var descriptor = new Unit("descriptor");
+        var relation = new Unit("relation");
+        var name = new Unit("name");
+        var unit = new Unit("unit");
+        var context = new Unit("context");
+        var enumeration = new Unit("enumeration");
+        var value = new Unit("value");
+        var negation = new Unit("negation");
+
+        var primitive = new Descriptor("primitive");
+        var categorical = new Descriptor("categorical");
+
+        var units = List.of(
+            language,
+            term,
+            descriptor,
+            relation,
+            name,
+            unit,
+            context
+        );
+
+        var descriptors = List.of(
+            primitive
+        );
+
+        var relations = List.of(
+            new Composition.Builder(language, term)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition.Builder(language, descriptor)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition.Builder(language, relation)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Composition(term, name),
+            new Definition(name, Unit.primitives.get("string")),
+            new Categorization(unit, term),
+            new Description(unit, new Describer(false, true), primitive),
+            new Composition.Builder(unit, context)
+                .composer(new Composer(true, false))
+                .build(),
+            new Definition(context, Unit.primitives.get("string"))
+        );
+
+        units.forEach(molly::addUnit);
+        descriptors.forEach(molly::addDescriptor);
+        relations.forEach(molly::addRelation);
+
+        return molly;
+    }
+
     public static Language get(String languageName) {
         var key = languageName.toLowerCase();
         if (key.equals("kitchen")) return kitchen();
         if (key.equals("pbj")) return pbj();
         if (key.equals("blackjack")) return blackjack();
+        if (key.equals("molly")) return molly();
         return null;
     }
 }
