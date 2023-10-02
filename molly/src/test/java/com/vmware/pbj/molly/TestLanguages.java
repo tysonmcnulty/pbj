@@ -191,7 +191,6 @@ public class TestLanguages {
         var negation = new Unit("negation");
 
         var primitive = new Descriptor("primitive");
-        var categorical = new Descriptor("categorical");
 
         var units = List.of(
             language,
@@ -200,7 +199,10 @@ public class TestLanguages {
             relation,
             name,
             unit,
-            context
+            context,
+            enumeration,
+            value,
+            negation
         );
 
         var descriptors = List.of(
@@ -224,7 +226,17 @@ public class TestLanguages {
             new Composition.Builder(unit, context)
                 .composer(new Composer(true, false))
                 .build(),
-            new Definition(context, Unit.primitives.get("string"))
+            new Definition(context, Unit.primitives.get("string")),
+            new Categorization(enumeration, unit),
+            new Composition.Builder(enumeration, value)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Definition(value, Unit.primitives.get("string")),
+            new Categorization(descriptor, term),
+            new Composition.Builder(descriptor, negation)
+                .composer(new Composer(true, false))
+                .build(),
+            new Definition(negation, Unit.primitives.get("string"))
         );
 
         units.forEach(molly::addUnit);

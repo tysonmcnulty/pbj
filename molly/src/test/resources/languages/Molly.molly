@@ -19,30 +19,52 @@
 - A descriptor is a kind of term
 - A descriptor may have a negation, which is just a string
 
-### Relation
-- A relation has a mutant, which is just a unit
-- A relation has some kind of mutation, which is just a term
-- A relation has some kind of operator
+[//]: # (### Relation)
 
-### Composition
-- A composition is a kind of relation
-- A composition's operator is just a composer
-- A composition's mutation is just a unit
-- A composition has cardinality, which is just "one to one" or "one to many"
-- A composer is either obviated or not
-- A composer is either qualified or not
+[//]: # (- A relation has a mutant, which is just a unit)
 
-### Categorization
-- A categorization is a kind of relation
-- A categorization's operator is just a categorizer
-- A categorization's mutation is just a unit
+[//]: # (- A relation has some kind of mutation, which is just a term)
 
-### Description
-- A description is a kind of relation
-- A description's operator is just a describer
-- A description's mutation is just a descriptor
+[//]: # (- A relation has some kind of operator)
 
-### Definition
-- A definition is a kind of relation
-- A definition's operator is just a definer
-- A definition's mutation is just a unit
+[//]: # ()
+[//]: # (### Composition)
+
+[//]: # (- A composition is a kind of relation)
+
+[//]: # (- A composition's operator is just a composer)
+
+[//]: # (- A composition's mutation is just a unit)
+
+[//]: # (- A composition has cardinality, which is just "one to one" or "one to many")
+
+[//]: # (- A composer is either obviated or not)
+
+[//]: # (- A composer is either qualified or not)
+
+[//]: # ()
+[//]: # (### Categorization)
+
+[//]: # (- A categorization is a kind of relation)
+
+[//]: # (- A categorization's operator is just a categorizer)
+
+[//]: # (- A categorization's mutation is just a unit)
+
+[//]: # ()
+[//]: # (### Description)
+
+[//]: # (- A description is a kind of relation)
+
+[//]: # (- A description's operator is just a describer)
+
+[//]: # (- A description's mutation is just a descriptor)
+
+[//]: # ()
+[//]: # (### Definition)
+
+[//]: # (- A definition is a kind of relation)
+
+[//]: # (- A definition's operator is just a definer)
+
+[//]: # (- A definition's mutation is just a unit)

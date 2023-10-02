@@ -38,13 +38,23 @@ public class Unit extends Term {
             '}';
     }
 
-    public static final Map<String, Unit> primitives = Map.of(
+    private static final Map<String, Unit> singularPrimitives = Map.of(
         "string", new Unit("string"),
         "number", new Unit("number"),
         "decimal", new Unit("decimal"),
         "boolean", new Unit("boolean")
     );
 
+    public static final Map<String, Unit> primitives = Map.of(
+        "string", singularPrimitives.get("string"),
+        "strings", singularPrimitives.get("string"),
+        "number", singularPrimitives.get("number"),
+        "numbers", singularPrimitives.get("number"),
+        "decimal", singularPrimitives.get("decimal"),
+        "decimals", singularPrimitives.get("decimal"),
+        "boolean", singularPrimitives.get("boolean"),
+        "booleans", singularPrimitives.get("boolean")
+    );
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
