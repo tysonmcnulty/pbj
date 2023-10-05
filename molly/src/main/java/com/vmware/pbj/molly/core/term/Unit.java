@@ -1,5 +1,7 @@
 package com.vmware.pbj.molly.core.term;
 
+import com.vmware.pbj.molly.EnglishUtils;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +31,16 @@ public class Unit extends Term {
 
     public boolean isPrimitive() {
         return primitives.containsValue(this);
+    }
+
+    public String getUnitName() {
+        return context != null ? context + " " + name : name;
+    }
+
+    public String getPluralUnitName() {
+        return context != null
+            ? context + " " + getPluralName()
+            : getPluralName();
     }
 
     public static Unit fromInflectedName(String inflectedName) {

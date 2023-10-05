@@ -38,6 +38,6 @@ public class Descriptor extends Term {
     }
 
     public Optional<String> getNegation() {
-        return Optional.of(negation);
+        return Optional.ofNullable(negation);
     }
 }
