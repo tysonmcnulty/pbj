@@ -98,9 +98,9 @@ public class MollyListenerInterpreter extends MollyBaseListener {
 
     @Override
     public void exitDefinition(MollyParser.DefinitionContext ctx) {
-        Unit mutant = language.getUnitByName(termNameOf(ctx.mutant.unit().term()));
+        Unit mutant = language.getUnitByName(unitNameOf(ctx.mutant.unit()));
         Unit mutation = ctx.mutation.values() == null
-            ? language.getUnitByName(termNameOf(ctx.mutation.unit().term()))
+            ? language.getUnitByName(unitNameOf(ctx.mutation.unit()))
             : language.getUnitByName(String.format("%s values", mutant.getName()));
 
         this.language.addRelation(new Definition(mutant, mutation));
@@ -124,7 +124,7 @@ public class MollyListenerInterpreter extends MollyBaseListener {
 
     @Override
     public void exitDescription(MollyParser.DescriptionContext ctx) {
-        Unit mutant = language.getUnitByName(termNameOf(ctx.mutant.unit().term()));
+        Unit mutant = language.getUnitByName(unitNameOf(ctx.mutant.unit()));
         Describer operator = new Describer(
             ctx.operator.QUALIFIER() != null,
             ctx.operator.OBVIATOR() != null
@@ -136,15 +136,15 @@ public class MollyListenerInterpreter extends MollyBaseListener {
 
     @Override
     public void exitCategorization(MollyParser.CategorizationContext ctx) {
-        var mutant = language.getUnitByName(termNameOf(ctx.mutant.unit().term()));
-        var mutation = language.getUnitByName(termNameOf(ctx.mutation.category().unit().term()));
+        var mutant = language.getUnitByName(unitNameOf(ctx.mutant.unit()));
+        var mutation = language.getUnitByName(unitNameOf(ctx.mutation.category().unit()));
 
         language.addRelation(new Categorization(mutant, mutation));
     }
 
     @Override
     public void exitComposition(MollyParser.CompositionContext ctx) {
-        var mutant = language.getUnitByName(termNameOf(ctx.mutant.unit().term()));
+        var mutant = language.getUnitByName(unitNameOf(ctx.mutant.unit()));
         var operator = new Composer(
             ctx.operator.QUALIFIER() != null,
             ctx.operator.OBVIATOR() != null
@@ -154,14 +154,14 @@ public class MollyListenerInterpreter extends MollyBaseListener {
             : Cardinality.ONE_TO_MANY;
 
         if (ctx.mutation.category() != null) {
-            var mutation = language.getUnitByName(termNameOf(ctx.mutation.category().unit().term()));
+            var mutation = language.getUnitByName(unitNameOf(ctx.mutation.category().unit()));
             language.addRelation(new Composition.Builder(mutant, mutation)
                 .composer(operator)
                 .cardinality(cardinality)
                 .categorical(true)
                 .build());
         } else if (ctx.mutation.unit() != null) {
-            var mutation = language.getUnitByName(termNameOf(ctx.mutation.unit().term()));
+            var mutation = language.getUnitByName(unitNameOf(ctx.mutation.unit()));
             language.addRelation(new Composition.Builder(mutant, mutation)
                 .composer(operator)
                 .cardinality(cardinality)
@@ -173,19 +173,30 @@ public class MollyListenerInterpreter extends MollyBaseListener {
     public void exitSubdefinition(MollyParser.SubdefinitionContext ctx) {
         var mutant = language.getUnitByName(getSubordinatedMutationName(ctx));
         Unit mutation = ctx.mutation.values() == null
-            ? language.getUnitByName(termNameOf(ctx.mutation.unit().term()))
+            ? language.getUnitByName(unitNameOf(ctx.mutation.unit()))
             : language.getUnitByName(String.format("%s values", mutant.getName()));
 
         language.addRelation(new Definition(mutant, mutation));
     }
 
     private String termNameOf(MollyParser.TermContext ctx) {
+        String termName;
         if (ctx.BOXED_WORDS() != null) {
             var boxedWordsText = ctx.BOXED_WORDS().getText();
-            return EnglishUtils.normalizeCase(String.join(" ", boxedWordsText.substring(1, boxedWordsText.length() - 1).split("\\s+")));
+            termName = EnglishUtils.normalizeCase(String.join(" ", boxedWordsText.substring(1, boxedWordsText.length() - 1).split("\\s+")));
         } else {
-            return EnglishUtils.normalizeCase(ctx.WORD().stream().map(ParseTree::getText).collect(Collectors.joining(" ")));
+            termName = EnglishUtils.normalizeCase(ctx.WORD().stream().map(ParseTree::getText).collect(Collectors.joining(" ")));
         }
+        return termName;
+    }
+
+    private String unitNameOf(MollyParser.UnitContext ctx) {
+        var termName = termNameOf(ctx.term());
+        String contextTermName = null;
+        if (ctx.context() != null) {
+            contextTermName = termNameOf(ctx.context().term());
+        }
+        return contextTermName != null ? contextTermName + " " + termName : termName;
     }
 
     private String valueOf(MollyParser.ValueContext ctx) {

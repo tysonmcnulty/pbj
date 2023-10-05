@@ -192,8 +192,22 @@ public class TestLanguages {
         var mutant = new Unit("mutant");
         var mutation = new Unit("mutation");
         var operator = new Unit("operator");
+        var composition = new Unit("composition");
+        var compositionOperator = new Unit("operator", "composition");
+        var composer = new Unit("composer");
+        var compositionMutation = new Unit("mutation", "composition");
+        var cardinality = new Unit("cardinality");
+        var cardinalityValues = new Enumeration.Builder("cardinality value")
+            .values("one to one", "one to many")
+            .build();
+        var categorization = new Unit("categorization");
+        var categorizationOperator = new Unit("operator", "categorization");
+        var categorizer = new Unit("categorizer");
+        var categorizationMutation = new Unit("mutation", "categorization");
 
         var primitive = new Descriptor("primitive");
+        var obviated = new Descriptor("obviated");
+        var qualified = new Descriptor("qualified");
 
         var units = List.of(
             language,
@@ -208,11 +222,23 @@ public class TestLanguages {
             negation,
             mutant,
             mutation,
-            operator
+            operator,
+            composition,
+            compositionOperator,
+            composer,
+            compositionMutation,
+            cardinality,
+            cardinalityValues,
+            categorization,
+            categorizationOperator,
+            categorizer,
+            categorizationMutation
         );
 
         var descriptors = List.of(
-            primitive
+            primitive,
+            obviated,
+            qualified
         );
 
         var relations = List.of(
@@ -251,7 +277,19 @@ public class TestLanguages {
             new Definition(mutation, term),
             new Composition.Builder(relation, operator)
                 .categorical(true)
-                .build()
+                .build(),
+            new Categorization(composition, relation),
+            new Definition(compositionOperator, composer),
+            new Categorization(composer, operator),
+            new Definition(compositionMutation, unit),
+            new Composition(composition, cardinality),
+            new Definition(cardinality, cardinalityValues),
+            new Description(composer, obviated),
+            new Description(composer, qualified),
+            new Categorization(categorization, relation),
+            new Definition(categorizationOperator, categorizer),
+            new Categorization(categorizer, operator),
+            new Definition(categorizationMutation, unit)
         );
 
         units.forEach(molly::addUnit);

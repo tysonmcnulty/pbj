@@ -14,6 +14,11 @@ public class Unit extends Term {
         super(name);
     }
 
+    public Unit(String name, String context) {
+        super(name);
+        this.context = context;
+    }
+
     public Optional<String> getContext() {
         return Optional.ofNullable(context);
     }
