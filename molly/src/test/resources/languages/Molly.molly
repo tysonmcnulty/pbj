@@ -19,15 +19,11 @@
 - A descriptor is a kind of term
 - A descriptor may have a negation, which is just a string
 
-[//]: # (### Relation)
+### Relation
+- A relation has a mutant, which is just a unit
+- A relation has some kind of mutation, which is just a term
+- A relation has some kind of operator
 
-[//]: # (- A relation has a mutant, which is just a unit)
-
-[//]: # (- A relation has some kind of mutation, which is just a term)
-
-[//]: # (- A relation has some kind of operator)
-
-[//]: # ()
 [//]: # (### Composition)
 
 [//]: # (- A composition is a kind of relation)

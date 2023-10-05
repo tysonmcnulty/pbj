@@ -189,6 +189,9 @@ public class TestLanguages {
         var enumeration = new Unit("enumeration");
         var value = new Unit("value");
         var negation = new Unit("negation");
+        var mutant = new Unit("mutant");
+        var mutation = new Unit("mutation");
+        var operator = new Unit("operator");
 
         var primitive = new Descriptor("primitive");
 
@@ -202,7 +205,10 @@ public class TestLanguages {
             context,
             enumeration,
             value,
-            negation
+            negation,
+            mutant,
+            mutation,
+            operator
         );
 
         var descriptors = List.of(
@@ -236,7 +242,16 @@ public class TestLanguages {
             new Composition.Builder(descriptor, negation)
                 .composer(new Composer(true, false))
                 .build(),
-            new Definition(negation, Unit.primitives.get("string"))
+            new Definition(negation, Unit.primitives.get("string")),
+            new Composition(relation, mutant),
+            new Definition(mutant, unit),
+            new Composition.Builder(relation, mutation)
+                .categorical(true)
+                .build(),
+            new Definition(mutation, term),
+            new Composition.Builder(relation, operator)
+                .categorical(true)
+                .build()
         );
 
         units.forEach(molly::addUnit);
