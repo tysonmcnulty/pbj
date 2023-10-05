@@ -39,20 +39,14 @@
 - A categorizer is a kind of operator
 - A categorization's mutation is just a unit
 
-[//]: # ()
-[//]: # (### Description)
+### Description
+- A description is a kind of relation
+- A description's operator is just a describer
+- A describer is a kind of operator
+- A description's mutation is just a descriptor
 
-[//]: # (- A description is a kind of relation)
-
-[//]: # (- A description's operator is just a describer)
-
-[//]: # (- A description's mutation is just a descriptor)
-
-[//]: # ()
-[//]: # (### Definition)
-
-[//]: # (- A definition is a kind of relation)
-
-[//]: # (- A definition's operator is just a definer)
-
-[//]: # (- A definition's mutation is just a unit)
+### Definition
+- A definition is a kind of relation
+- A definition's operator is just a definer
+- A definer is a kind of operator
+- A definition's mutation is just a unit

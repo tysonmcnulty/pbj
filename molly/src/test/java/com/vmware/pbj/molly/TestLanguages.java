@@ -204,6 +204,14 @@ public class TestLanguages {
         var categorizationOperator = new Unit("operator", "categorization");
         var categorizer = new Unit("categorizer");
         var categorizationMutation = new Unit("mutation", "categorization");
+        var description = new Unit("description");
+        var descriptionOperator = new Unit("operator", "description");
+        var describer = new Unit("describer");
+        var descriptionMutation = new Unit("mutation", "description");
+        var definition = new Unit("definition");
+        var definitionOperator = new Unit("operator", "definition");
+        var definer = new Unit("definer");
+        var definitionMutation = new Unit("mutation", "definition");
 
         var primitive = new Descriptor("primitive");
         var obviated = new Descriptor("obviated");
@@ -232,7 +240,15 @@ public class TestLanguages {
             categorization,
             categorizationOperator,
             categorizer,
-            categorizationMutation
+            categorizationMutation,
+            description,
+            descriptionOperator,
+            describer,
+            descriptionMutation,
+            definition,
+            definitionOperator,
+            definer,
+            definitionMutation
         );
 
         var descriptors = List.of(
@@ -289,7 +305,15 @@ public class TestLanguages {
             new Categorization(categorization, relation),
             new Definition(categorizationOperator, categorizer),
             new Categorization(categorizer, operator),
-            new Definition(categorizationMutation, unit)
+            new Definition(categorizationMutation, unit),
+            new Categorization(description, relation),
+            new Definition(descriptionOperator, describer),
+            new Categorization(describer, operator),
+            new Definition(descriptionMutation, descriptor),
+            new Categorization(definition, relation),
+            new Definition(definitionOperator, definer),
+            new Categorization(definer, operator),
+            new Definition(definitionMutation, unit)
         );
 
         units.forEach(molly::addUnit);
