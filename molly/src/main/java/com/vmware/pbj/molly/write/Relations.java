@@ -4,9 +4,12 @@ import com.squareup.javapoet.*;
 import com.vmware.pbj.molly.core.Language;
 import com.vmware.pbj.molly.core.relation.Categorization;
 import com.vmware.pbj.molly.core.relation.Composition;
+import com.vmware.pbj.molly.core.relation.Definition;
 import com.vmware.pbj.molly.core.relation.Description;
 
 import javax.lang.model.element.Modifier;
+
+import java.util.stream.Collectors;
 
 import static com.vmware.pbj.molly.write.Syntax.classNameOf;
 import static com.vmware.pbj.molly.write.Syntax.fieldNameOf;
@@ -24,7 +27,9 @@ public class Relations {
         TypeName fieldType;
 
         if (composition.isCategorical()) {
-            var typeVariable = TypeVariableName.get("T").withBounds(mutationTypeName);
+            var typeVariableName = classNameOf(mutation.getName()) + "Type";
+            var typeVariable = TypeVariableName.get(typeVariableName)
+                .withBounds(mutationTypeName);
             builder.addTypeVariable(typeVariable);
             fieldType = typeVariable;
         } else {
@@ -32,16 +37,16 @@ public class Relations {
         }
 
         switch (composition.getCardinality()) {
-        case ONE_TO_MANY:
-            fieldName = fieldNameOf(mutation.getPluralName());
-            fieldType = ParameterizedTypeName.get(
-                ClassName.get("java.util", "Collection"),
-                fieldType);
-            break;
-        case ONE_TO_ONE:
-        default:
-            fieldName = fieldNameOf(mutation.getName());
-            break;
+            case ONE_TO_MANY:
+                fieldName = fieldNameOf(mutation.getPluralName());
+                fieldType = ParameterizedTypeName.get(
+                    ClassName.get("java.util", "Collection"),
+                    fieldType);
+                break;
+            case ONE_TO_ONE:
+            default:
+                fieldName = fieldNameOf(mutation.getName());
+                break;
         }
 
         var accessorName = "get" + capitalize(fieldName);
@@ -79,13 +84,42 @@ public class Relations {
         }
     }
 
-    public static void applyCategorization(Categorization categorization, TypeSpec.Builder builder, MollyJavaGeneratorConfig config) {
+    public static void applyCategorization(Categorization categorization, TypeSpec.Builder builder, Language language, MollyJavaGeneratorConfig config) {
         var mutation = categorization.getMutation();
         var mutationName = mutation.getName();
-        var mutationClassName = classNameOf(mutationName);
 
-        var supertype = ClassName.get(config.getJavaPackage(), mutationClassName);
-        builder.superclass(supertype);
+        // Check for contextual definitions, and add them as generic subtypes
+        var contextualDefinitions = language.getRelations().stream()
+            .filter((r) -> r instanceof Definition)
+            .map((r) -> (Definition) r)
+            .filter((d) -> d.getMutant().getContext().isPresent())
+            .filter((d) -> d.getMutant().getContext().get().equals(categorization.getMutant().getName()))
+            .collect(Collectors.toMap(
+                (d) -> d.getMutant().getName(),
+                (d) -> d.getMutation().getName()));
+
+        var supertypeGenericMutationNames = language.getRelations().stream()
+            .filter((r) -> r instanceof Composition)
+            .map((r) -> (Composition) r)
+            .filter(Composition::isCategorical)
+            .filter((c) -> c.getMutant().getName().equals(mutationName))
+            .map((c) -> c.getMutation().getName())
+            .collect(Collectors.toList());
+
+        var typeArguments = supertypeGenericMutationNames.stream()
+            .map((name) -> ClassName.get(
+                config.getJavaPackage(),
+                classNameOf(contextualDefinitions.get(name)))
+            )
+            .toArray(ClassName[]::new);
+
+        var superclass = typeArguments.length > 0
+            ? ParameterizedTypeName.get(
+            ClassName.get(config.getJavaPackage(), classNameOf(mutationName)),
+            typeArguments)
+            : ClassName.get(config.getJavaPackage(), classNameOf(mutationName));
+
+        builder.superclass(superclass);
     }
 
     public static void applyDescription(Description description, TypeSpec.Builder builder) {

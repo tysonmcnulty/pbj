@@ -1,3 +1,3 @@
 package io.github.tysonmcnulty;
 
-public class Description extends Relation {}
+public class Description extends Relation<Descriptor, Describer> {}

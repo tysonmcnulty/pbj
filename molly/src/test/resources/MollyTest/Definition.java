@@ -1,3 +1,3 @@
 package io.github.tysonmcnulty;
 
-public class Definition extends Relation {}
+public class Definition extends Relation<Unit, Definer> {}

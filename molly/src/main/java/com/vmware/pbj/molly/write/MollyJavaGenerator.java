@@ -178,7 +178,7 @@ public class MollyJavaGenerator {
         if (relation instanceof Composition) {
             Relations.applyComposition((Composition) relation, builder, language, config);
         } else if (relation instanceof Categorization) {
-            Relations.applyCategorization((Categorization) relation, builder, config);
+            Relations.applyCategorization((Categorization) relation, builder, language, config);
         } else if (relation instanceof Description) {
             Relations.applyDescription((Description) relation, builder);
         }

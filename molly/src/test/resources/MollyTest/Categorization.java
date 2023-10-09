@@ -1,3 +1,3 @@
 package io.github.tysonmcnulty;
 
-public class Categorization extends Relation {}
+public class Categorization extends Relation<Unit, Categorizer> {}
