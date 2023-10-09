@@ -44,6 +44,8 @@
 - A description's operator is just a describer
 - A describer is a kind of operator
 - A description's mutation is just a descriptor
+- A describer is either obviated or not
+- A describer is either qualified or not
 
 ### Definition
 - A definition is a kind of relation

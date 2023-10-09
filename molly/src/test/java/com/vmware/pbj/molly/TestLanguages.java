@@ -310,6 +310,8 @@ public class TestLanguages {
             new Definition(descriptionOperator, describer),
             new Categorization(describer, operator),
             new Definition(descriptionMutation, descriptor),
+            new Description(describer, obviated),
+            new Description(describer, qualified),
             new Categorization(definition, relation),
             new Definition(definitionOperator, definer),
             new Categorization(definer, operator),
