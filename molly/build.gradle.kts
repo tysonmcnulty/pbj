@@ -80,7 +80,6 @@ idea {
 publishing {
     publications {
         register<MavenPublication>("molly") {
-            artifactId = "molly"
             from(components["java"])
         }
     }
