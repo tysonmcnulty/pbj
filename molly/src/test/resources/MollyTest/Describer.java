@@ -1,6 +1,6 @@
 package io.github.tysonmcnulty;
 
-public class Composer extends Operator {
+public class Describer extends Operator {
     protected boolean isObviated;
 
     protected boolean isQualified;

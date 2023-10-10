@@ -1,3 +1,9 @@
 package io.github.tysonmcnulty;
 
-public abstract class Composition extends Relation<Composer> {}
+public class Composition extends Relation<Unit, Composer> {
+    protected CardinalityValue cardinality;
+
+    public CardinalityValue getCardinality() {
+        return cardinality;
+    }
+}

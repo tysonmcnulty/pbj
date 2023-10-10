@@ -1,9 +1,9 @@
 package io.github.tysonmcnulty;
 
-public class Jar<T extends Spread> {
-    protected T spread;
+public class Jar<SpreadType extends Spread> {
+    protected SpreadType spread;
 
-    public T getSpread() {
+    public SpreadType getSpread() {
         return spread;
     }
 }

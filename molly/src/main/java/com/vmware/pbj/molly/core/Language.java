@@ -41,11 +41,8 @@ public class Language {
 
         unitsByName.putIfAbsent(unit.getName(), unit);
         unitsByName.putIfAbsent(unit.getPluralName(), unit);
-
-        if (unit.getContext().isPresent()) {
-            unitsByName.putIfAbsent(String.join(" ", unit.getContext().get(), unit.getName()), unit);
-            unitsByName.putIfAbsent(String.join(" ", unit.getContext().get(), unit.getPluralName()), unit);
-        }
+        unitsByName.putIfAbsent(unit.getUnitName(), unit);
+        unitsByName.putIfAbsent(unit.getPluralUnitName(), unit);
     }
 
     public void addDescriptor(Descriptor descriptor) {
@@ -67,14 +64,14 @@ public class Language {
     public Unit representationOf(Unit unit) {
         var definitions = getRelations().stream()
             .filter(r -> r instanceof Definition)
-            .collect(Collectors.toMap(r -> r.getMutant().getName(), r -> (Definition) r));
+            .collect(Collectors.toMap(r -> r.getMutant().getUnitName(), r -> (Definition) r));
         var definitionMutants = definitions.values().stream()
             .map(Relation::getMutant)
             .collect(Collectors.toSet());
         var representation = unit;
 
         while (definitionMutants.contains(representation)) {
-            representation = definitions.get(representation.getName()).getMutation();
+            representation = definitions.get(representation.getUnitName()).getMutation();
         }
 
         return representation;

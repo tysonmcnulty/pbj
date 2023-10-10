@@ -189,9 +189,33 @@ public class TestLanguages {
         var enumeration = new Unit("enumeration");
         var value = new Unit("value");
         var negation = new Unit("negation");
+        var mutant = new Unit("mutant");
+        var mutation = new Unit("mutation");
+        var operator = new Unit("operator");
+        var composition = new Unit("composition");
+        var compositionOperator = new Unit("operator", "composition");
+        var composer = new Unit("composer");
+        var compositionMutation = new Unit("mutation", "composition");
+        var cardinality = new Unit("cardinality");
+        var cardinalityValues = new Enumeration.Builder("cardinality value")
+            .values("one to one", "one to many")
+            .build();
+        var categorization = new Unit("categorization");
+        var categorizationOperator = new Unit("operator", "categorization");
+        var categorizer = new Unit("categorizer");
+        var categorizationMutation = new Unit("mutation", "categorization");
+        var description = new Unit("description");
+        var descriptionOperator = new Unit("operator", "description");
+        var describer = new Unit("describer");
+        var descriptionMutation = new Unit("mutation", "description");
+        var definition = new Unit("definition");
+        var definitionOperator = new Unit("operator", "definition");
+        var definer = new Unit("definer");
+        var definitionMutation = new Unit("mutation", "definition");
 
         var primitive = new Descriptor("primitive");
-        var categorical = new Descriptor("categorical");
+        var obviated = new Descriptor("obviated");
+        var qualified = new Descriptor("qualified");
 
         var units = List.of(
             language,
@@ -200,11 +224,37 @@ public class TestLanguages {
             relation,
             name,
             unit,
-            context
+            context,
+            enumeration,
+            value,
+            negation,
+            mutant,
+            mutation,
+            operator,
+            composition,
+            compositionOperator,
+            composer,
+            compositionMutation,
+            cardinality,
+            cardinalityValues,
+            categorization,
+            categorizationOperator,
+            categorizer,
+            categorizationMutation,
+            description,
+            descriptionOperator,
+            describer,
+            descriptionMutation,
+            definition,
+            definitionOperator,
+            definer,
+            definitionMutation
         );
 
         var descriptors = List.of(
-            primitive
+            primitive,
+            obviated,
+            qualified
         );
 
         var relations = List.of(
@@ -224,7 +274,48 @@ public class TestLanguages {
             new Composition.Builder(unit, context)
                 .composer(new Composer(true, false))
                 .build(),
-            new Definition(context, Unit.primitives.get("string"))
+            new Definition(context, Unit.primitives.get("string")),
+            new Categorization(enumeration, unit),
+            new Composition.Builder(enumeration, value)
+                .cardinality(ONE_TO_MANY)
+                .build(),
+            new Definition(value, Unit.primitives.get("string")),
+            new Categorization(descriptor, term),
+            new Composition.Builder(descriptor, negation)
+                .composer(new Composer(true, false))
+                .build(),
+            new Definition(negation, Unit.primitives.get("string")),
+            new Composition(relation, mutant),
+            new Definition(mutant, unit),
+            new Composition.Builder(relation, mutation)
+                .categorical(true)
+                .build(),
+            new Definition(mutation, term),
+            new Composition.Builder(relation, operator)
+                .categorical(true)
+                .build(),
+            new Categorization(composition, relation),
+            new Definition(compositionOperator, composer),
+            new Categorization(composer, operator),
+            new Definition(compositionMutation, unit),
+            new Composition(composition, cardinality),
+            new Definition(cardinality, cardinalityValues),
+            new Description(composer, obviated),
+            new Description(composer, qualified),
+            new Categorization(categorization, relation),
+            new Definition(categorizationOperator, categorizer),
+            new Categorization(categorizer, operator),
+            new Definition(categorizationMutation, unit),
+            new Categorization(description, relation),
+            new Definition(descriptionOperator, describer),
+            new Categorization(describer, operator),
+            new Definition(descriptionMutation, descriptor),
+            new Description(describer, obviated),
+            new Description(describer, qualified),
+            new Categorization(definition, relation),
+            new Definition(definitionOperator, definer),
+            new Categorization(definer, operator),
+            new Definition(definitionMutation, unit)
         );
 
         units.forEach(molly::addUnit);

@@ -1,9 +1,8 @@
 package io.github.tysonmcnulty;
 
-import java.lang.String;
 import java.util.Collection;
 
-public abstract class ValueConstraint {
+public class Enumeration extends Unit {
     protected Collection<String> values;
 
     public Collection<String> getValues() {

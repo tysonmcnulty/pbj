@@ -126,7 +126,7 @@ public class MollyJavaGenerator {
                 );
 
                 CharSink sink = com.google.common.io.Files.asCharSink(outputFile.toFile(), StandardCharsets.UTF_8);
-                System.out.printf("Writing %s to %s%n", typeSpec.name, dir);
+                System.out.printf("Writing %s to %s%n", typeSpec.name, outputFile.getParent().toString());
                 sink.write(formatted);
             }
         } catch (IOException e) {
@@ -152,7 +152,7 @@ public class MollyJavaGenerator {
 
         for (var v: enumeration.getValues()) {
             typeSpecBuilder.addEnumConstant(
-                v.toUpperCase(),
+                v.toUpperCase().replace(" ", "_"),
                 TypeSpec.anonymousClassBuilder("$S", v).build()
             );
         }
@@ -178,7 +178,7 @@ public class MollyJavaGenerator {
         if (relation instanceof Composition) {
             Relations.applyComposition((Composition) relation, builder, language, config);
         } else if (relation instanceof Categorization) {
-            Relations.applyCategorization((Categorization) relation, builder, config);
+            Relations.applyCategorization((Categorization) relation, builder, language, config);
         } else if (relation instanceof Description) {
             Relations.applyDescription((Description) relation, builder);
         }

@@ -27,6 +27,7 @@
 ### Composition
 - A composition is a kind of relation
 - A composition's operator is just a composer
+- A composer is a kind of operator
 - A composition's mutation is just a unit
 - A composition has cardinality, which is just "one to one" or "one to many"
 - A composer is either obviated or not
@@ -35,14 +36,19 @@
 ### Categorization
 - A categorization is a kind of relation
 - A categorization's operator is just a categorizer
+- A categorizer is a kind of operator
 - A categorization's mutation is just a unit
 
 ### Description
 - A description is a kind of relation
 - A description's operator is just a describer
+- A describer is a kind of operator
 - A description's mutation is just a descriptor
+- A describer is either obviated or not
+- A describer is either qualified or not
 
 ### Definition
 - A definition is a kind of relation
 - A definition's operator is just a definer
+- A definer is a kind of operator
 - A definition's mutation is just a unit

@@ -15,7 +15,7 @@ public abstract class Relation<T extends Operator, U extends Term> {
         return operator;
     };
 
-    public Term getMutant() {
+    public Unit getMutant() {
         return mutant;
     }
 

@@ -1,21 +1,21 @@
 package io.github.tysonmcnulty;
 
-public abstract class Relation<T> {
-    protected Term mutant;
+public class Relation<MutationType extends Term, OperatorType extends Operator> {
+    protected Unit mutant;
 
-    protected Term mutation;
+    protected MutationType mutation;
 
-    protected T relater;
+    protected OperatorType operator;
 
-    public Term getMutant() {
+    public Unit getMutant() {
         return mutant;
     }
 
-    public Term getMutation() {
+    public MutationType getMutation() {
         return mutation;
     }
 
-    public T getRelater() {
-        return relater;
+    public OperatorType getOperator() {
+        return operator;
     }
 }

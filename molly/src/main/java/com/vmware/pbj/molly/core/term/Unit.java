@@ -1,5 +1,7 @@
 package com.vmware.pbj.molly.core.term;
 
+import com.vmware.pbj.molly.EnglishUtils;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,6 +16,11 @@ public class Unit extends Term {
         super(name);
     }
 
+    public Unit(String name, String context) {
+        super(name);
+        this.context = context;
+    }
+
     public Optional<String> getContext() {
         return Optional.ofNullable(context);
     }
@@ -24,6 +31,16 @@ public class Unit extends Term {
 
     public boolean isPrimitive() {
         return primitives.containsValue(this);
+    }
+
+    public String getUnitName() {
+        return context != null ? context + " " + name : name;
+    }
+
+    public String getPluralUnitName() {
+        return context != null
+            ? context + " " + getPluralName()
+            : getPluralName();
     }
 
     public static Unit fromInflectedName(String inflectedName) {
@@ -38,13 +55,23 @@ public class Unit extends Term {
             '}';
     }
 
-    public static final Map<String, Unit> primitives = Map.of(
+    private static final Map<String, Unit> singularPrimitives = Map.of(
         "string", new Unit("string"),
         "number", new Unit("number"),
         "decimal", new Unit("decimal"),
         "boolean", new Unit("boolean")
     );
 
+    public static final Map<String, Unit> primitives = Map.of(
+        "string", singularPrimitives.get("string"),
+        "strings", singularPrimitives.get("string"),
+        "number", singularPrimitives.get("number"),
+        "numbers", singularPrimitives.get("number"),
+        "decimal", singularPrimitives.get("decimal"),
+        "decimals", singularPrimitives.get("decimal"),
+        "boolean", singularPrimitives.get("boolean"),
+        "booleans", singularPrimitives.get("boolean")
+    );
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
