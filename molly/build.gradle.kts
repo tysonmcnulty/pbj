@@ -79,7 +79,8 @@ idea {
 
 publishing {
     publications {
-        create<MavenPublication>("default") {
+        register<MavenPublication>("molly") {
+            artifactId = "molly"
             from(components["java"])
         }
     }
