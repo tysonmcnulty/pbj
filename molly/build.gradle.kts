@@ -37,7 +37,7 @@ dependencies {
     testImplementation("org.springframework:spring-core:5.3.21")
 }
 
-val grammarPackageName = "com.vmware.pbj.molly"
+val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
 
 sourceSets.create("generated") {
     java.srcDir("generated-src/antlr/main/")

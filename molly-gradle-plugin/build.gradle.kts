@@ -15,7 +15,7 @@ gradlePlugin {
     plugins {
         create("simplePlugin") {
             id = "molly-gradle-plugin"
-            implementationClass = "com.vmware.pbj.molly.gradle.MollyGradlePlugin"
+            implementationClass = "io.github.tysonmcnulty.pbj.molly.gradle.MollyGradlePlugin"
         }
     }
 }
