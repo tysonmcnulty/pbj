@@ -20,12 +20,12 @@ class StepDefinitions {
         bread = Bread.Loaf()
     }
 
-    @Given("There is a jar called the \"jelly jar\", which has jelly")
+    @Given("There is a jar of jelly called the \"jelly jar\"")
     fun given_the_jelly_jar() {
         jellyJar = Jar<Jelly>()
     }
 
-    @Given("There is a jar called the \"peanut butter jar\", which has peanut butter")
+    @Given("There is a jar of peanut butter called the \"peanut butter jar\"")
     fun given_the_peanut_butter_jar() {
         peanutButterJar = Jar<PeanutButter>()
     }
