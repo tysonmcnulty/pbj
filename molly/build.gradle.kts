@@ -11,9 +11,11 @@ val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
 val versionRegex = Regex("""\d+\.\d+\.\d+(?:-SNAPSHOT)?""")
 
 group = "io.github.tysonmcnulty.pbj"
-version = if (System.getenv("MOLLY_VERSION") != null)
-    versionRegex.find(System.getenv("MOLLY_VERSION"))?.value ?: "dev-SNAPSHOT"
-    else "dev-SNAPSHOT"
+version = (
+        if (System.getenv("MOLLY_VERSION") != null)
+            versionRegex.find(System.getenv("MOLLY_VERSION"))?.value ?: "dev-SNAPSHOT"
+        else
+            "dev-SNAPSHOT")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
