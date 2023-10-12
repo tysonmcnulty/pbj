@@ -1,10 +1,9 @@
 package io.github.tysonmcnulty.pbj.feature
 
-import io.github.tysonmcnulty.pbj.feature.core.model.*
-import io.github.tysonmcnulty.pbj.feature.makePbj
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
+import io.github.tysonmcnulty.pbj.feature.core.model.*
 import org.hamcrest.CoreMatchers.*
 import kotlin.test.assertNotNull
 

@@ -7,8 +7,13 @@ plugins {
     `maven-publish`
 }
 
+val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
+val versionRegex = Regex("""\d+\.\d+\.\d+(?:-SNAPSHOT)?""")
+
 group = "io.github.tysonmcnulty.pbj"
-version = "0.0.3-SNAPSHOT"
+version = if (System.getenv("MOLLY_VERSION") != null)
+    versionRegex.find(System.getenv("MOLLY_VERSION"))?.value ?: "dev-SNAPSHOT"
+    else "dev-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -36,8 +41,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework:spring-core:5.3.21")
 }
-
-val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
 
 sourceSets.create("generated") {
     java.srcDir("generated-src/antlr/main/")
