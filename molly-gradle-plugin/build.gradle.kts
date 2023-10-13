@@ -3,8 +3,14 @@ plugins {
     `maven-publish`
 }
 
+val versionRegex = Regex("""\d+\.\d+\.\d+(?:-SNAPSHOT)?""")
+
 group = "io.github.tysonmcnulty.pbj"
-version = "0.0.1-SNAPSHOT"
+version = (
+        if (System.getenv("MOLLY_GRADLE_PLUGIN_VERSION") != null)
+            versionRegex.find(System.getenv("MOLLY_GRADLE_PLUGIN_VERSION"))?.value ?: "dev-SNAPSHOT"
+        else
+            "dev-SNAPSHOT")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -21,11 +27,23 @@ gradlePlugin {
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral {
+        content {
+            excludeModule("io.github.tysonmcnulty.pbj", "molly")
+        }
+    }
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/tysonmcnulty/pbj")
+        credentials {
+            username = System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
-    implementation("io.github.tysonmcnulty.pbj:molly:0.0.1-SNAPSHOT")
+    implementation("io.github.tysonmcnulty.pbj:molly:0.0.4")
 }
 
 publishing {

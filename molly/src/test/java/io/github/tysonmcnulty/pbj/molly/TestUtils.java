@@ -1,7 +1,5 @@
 package io.github.tysonmcnulty.pbj.molly;
 
-import com.vmware.pbj.molly.MollyLexer;
-import com.vmware.pbj.molly.MollyParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
