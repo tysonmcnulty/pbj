@@ -3,14 +3,8 @@ plugins {
     `maven-publish`
 }
 
-val versionRegex = Regex("""\d+\.\d+\.\d+(?:-SNAPSHOT)?""")
-
 group = "io.github.tysonmcnulty.pbj"
-version = (
-        if (System.getenv("MOLLY_GRADLE_PLUGIN_VERSION") != null)
-            versionRegex.find(System.getenv("MOLLY_GRADLE_PLUGIN_VERSION"))?.value ?: "dev-SNAPSHOT"
-        else
-            "dev-SNAPSHOT")
+version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -19,8 +13,8 @@ java {
 
 gradlePlugin {
     plugins {
-        create("simplePlugin") {
-            id = "molly-gradle-plugin"
+        create("molly") {
+            id = "io.github.tysonmcnulty.pbj.molly"
             implementationClass = "io.github.tysonmcnulty.pbj.molly.gradle.MollyGradlePlugin"
         }
     }

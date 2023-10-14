@@ -1,16 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    dependencies {
-        classpath("io.github.tysonmcnulty.pbj", "molly-gradle-plugin", "0.0.1-SNAPSHOT")
-    }
-}
-
 plugins {
-    id("molly-gradle-plugin")
     idea
     `java-library`
     kotlin("jvm") version "1.6.21"
+    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1-SNAPSHOT"
 }
 
 java {
