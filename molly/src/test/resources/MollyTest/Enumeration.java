@@ -2,7 +2,7 @@ package io.github.tysonmcnulty;
 
 import java.util.Collection;
 
-public class Enumeration extends Unit {
+public abstract class Enumeration extends Unit {
     protected Collection<String> values;
 
     public Collection<String> getValues() {

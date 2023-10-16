@@ -8,8 +8,8 @@ public class Composer extends Operator {
     private final boolean isObviated;
 
     public Composer(
-            boolean isQualified,
-            boolean isObviated
+        boolean isQualified,
+        boolean isObviated
     ) {
         this.isQualified = isQualified;
         this.isObviated = isObviated;

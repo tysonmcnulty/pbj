@@ -113,9 +113,9 @@ public class MollyListenerInterpreter extends MollyBaseListener {
 
         var negationValue = valueOf(ctx.negation().value());
         String negation = List.of(
-            "not",
-            String.join(" ", "not", descriptorNameCandidate))
-        .contains(negationValue)
+                "not",
+                String.join(" ", "not", descriptorNameCandidate))
+            .contains(negationValue)
             ? null
             : negationValue;
 

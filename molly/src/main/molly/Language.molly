@@ -1,30 +1,37 @@
 ### Language
+
 - A language has many terms
 - A language has many descriptors
 - A language has many relations
 
 ### Term
+
 - A term has a name, which is just a string
 
 ### Unit
+
 - A unit is a kind of term
 - A unit is evidently primitive or not
 - A unit may have a context, which is just a string
 
 ### Enumeration
+
 - An enumeration is a kind of unit
 - An enumeration has many values, which are just strings
 
 ### Descriptor
+
 - A descriptor is a kind of term
 - A descriptor may have a negation, which is just a string
 
 ### Relation
+
 - A relation has a mutant, which is just a unit
 - A relation has some kind of mutation, which is just a term
 - A relation has some kind of operator
 
 ### Composition
+
 - A composition is a kind of relation
 - A composition's operator is just a composer
 - A composer is a kind of operator
@@ -34,12 +41,14 @@
 - A composer is either qualified or not
 
 ### Categorization
+
 - A categorization is a kind of relation
 - A categorization's operator is just a categorizer
 - A categorizer is a kind of operator
 - A categorization's mutation is just a unit
 
 ### Description
+
 - A description is a kind of relation
 - A description's operator is just a describer
 - A describer is a kind of operator
@@ -48,6 +57,7 @@
 - A describer is either qualified or not
 
 ### Definition
+
 - A definition is a kind of relation
 - A definition's operator is just a definer
 - A definer is a kind of operator

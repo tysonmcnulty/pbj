@@ -8,7 +8,6 @@ import com.google.common.io.CharSink;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
-import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -28,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,10 +42,6 @@ public class MollyJavaGenerator {
 
     private final MollyJavaGeneratorConfig config;
     private final Language language;
-
-    private static final Formatter FORMATTER = new Formatter(JavaFormatterOptions.builder()
-        .style(JavaFormatterOptions.Style.AOSP)
-        .build());
 
     public MollyJavaGenerator(Language language, MollyJavaGeneratorConfig config) {
         this.language = language;
@@ -89,32 +85,55 @@ public class MollyJavaGenerator {
                 }
             });
 
-            for (var builder : buildersByName.values()) {
-                TypeSpec typeSpec = builder.build();
+            var categorizationsByMutantName = language.getRelations().stream()
+                .filter(r -> r instanceof Categorization)
+                .map(r -> (Categorization) r)
+                .collect(Collectors.toUnmodifiableMap(c -> c.getMutant().getUnitName(), c -> c));
+
+            var categorizationScore = getUnitNameComparator(categorizationsByMutantName);
+
+            var sortedBuilderEntries = buildersByName.entrySet().stream()
+                .sorted(Comparator.comparingInt(e -> categorizationScore.apply(e.getKey())))
+                .collect(Collectors.toList());
+
+            Map<String, TypeSpec> typeSpecs = new HashMap<>();
+            for (var entry : sortedBuilderEntries) {
+                var builder = entry.getValue();
+                if (categorizationsByMutantName.containsKey(entry.getKey())) {
+                    var parent = categorizationsByMutantName.get(entry.getKey()).getMutation();
+                    var parentTypeSpec = typeSpecs.get(parent.getUnitName());
+                    if (parentTypeSpec.hasModifier(Modifier.ABSTRACT)) {
+                        builder.addModifiers(Modifier.ABSTRACT);
+                    }
+                }
+                typeSpecs.put(entry.getKey(), builder.build());
+            }
+
+            for (var typeSpec : typeSpecs.values()) {
                 JavaFile javaFile = JavaFile.builder(config.getJavaPackage(), typeSpec).build();
                 Path outputFile = getFilePath(javaFile, dir);
 
                 StringBuilder code = new StringBuilder();
                 javaFile.writeTo(code);
                 var formatterStep = GoogleJavaFormatStep.create("1.17.0", "AOSP", new Provisioner() {
-                        @Override
-                        @Nonnull
-                        public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
-                            return Stream.of(
-                                Formatter.class,
-                                RangeSet.class
-                            ).map(
-                                (Class<?> c) -> {
-                                    try {
-                                        var sourceLocation = c.getProtectionDomain().getCodeSource().getLocation();
-                                        return Paths.get(sourceLocation.toURI()).toFile();
-                                    } catch (URISyntaxException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                }).collect(Collectors.toSet());
+                    @Override
+                    @Nonnull
+                    public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
+                        return Stream.of(
+                            Formatter.class,
+                            RangeSet.class
+                        ).map(
+                            (Class<?> c) -> {
+                                try {
+                                    var sourceLocation = c.getProtectionDomain().getCodeSource().getLocation();
+                                    return Paths.get(sourceLocation.toURI()).toFile();
+                                } catch (URISyntaxException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }).collect(Collectors.toSet());
 
-                        }
-                    });
+                    }
+                });
 
                 var formatted = Objects.requireNonNull(
                     formatterStep.format(code.toString(),
@@ -134,19 +153,35 @@ public class MollyJavaGenerator {
         }
     }
 
+    private static Function<String, Integer> getUnitNameComparator(Map<String, Categorization> categorizationsByMutantName) {
+        return (name) -> {
+            var score = 0;
+            var curr = name;
+            do {
+                var nextCategorization = categorizationsByMutantName.getOrDefault(curr, null);
+                if (nextCategorization == null) {
+                    return score;
+                }
+                score++;
+                curr = nextCategorization.getMutation().getName();
+            } while (true);
+        };
+    }
+
     private TypeSpec.Builder createTypeSpecBuilder(Unit unit) {
         return (unit instanceof Enumeration)
             ? createEnumBuilder((Enumeration) unit)
             : TypeSpec
-                .classBuilder(classNameOf(unit.getName()))
-                .addModifiers(Modifier.PUBLIC);
+            .classBuilder(classNameOf(unit.getName()))
+            .addModifiers(Modifier.PUBLIC);
     }
+
     private TypeSpec.Builder createEnumBuilder(Enumeration enumeration) {
         var typeSpecBuilder = TypeSpec
             .enumBuilder(classNameOf(enumeration.getName()))
             .addModifiers(Modifier.PUBLIC);
 
-        for (var v: enumeration.getValues()) {
+        for (var v : enumeration.getValues()) {
             typeSpecBuilder.addEnumConstant(
                 v.toUpperCase().replace(" ", "_"),
                 TypeSpec.anonymousClassBuilder("$S", v).build()

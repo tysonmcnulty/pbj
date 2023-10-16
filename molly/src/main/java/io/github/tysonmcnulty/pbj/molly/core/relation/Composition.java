@@ -53,6 +53,7 @@ public class Composition extends Relation<Composer, Unit> {
             this.mutant = mutant;
             this.mutation = mutation;
         }
+
         public Builder composer(Composer composer) {
             this.composer = composer;
             return this;

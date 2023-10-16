@@ -70,6 +70,7 @@ public class Unit extends Term {
         "boolean", singularPrimitives.get("boolean"),
         "booleans", singularPrimitives.get("boolean")
     );
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -16,9 +16,9 @@ public class EnglishUtils {
 
     public static String[] inflectionsOf(String word) {
         if (isPlural(word)) {
-            return new String[] { English.singular(word), word };
+            return new String[]{English.singular(word), word};
         } else {
-            return new String[] { word, English.plural(word) };
+            return new String[]{word, English.plural(word)};
         }
     }
 
