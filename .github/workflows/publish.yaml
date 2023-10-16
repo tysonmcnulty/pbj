@@ -21,7 +21,5 @@ jobs:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MOLLY_VERSION: ${{ github.ref_name }}
-        MOLLY_GRADLE_PLUGIN_VERSION: '0.0.1-SNAPSHOT'
       run: |
         gradle :molly:publish
-        gradle :molly-gradle-plugin:publish
