@@ -2,7 +2,7 @@ rootProject.name = "molly"
 
 pluginManagement {
     repositories {
-        mavenCentral()
+        gradlePluginPortal()
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/tysonmcnulty/pbj")
