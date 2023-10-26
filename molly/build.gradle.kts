@@ -5,6 +5,7 @@ plugins {
     antlr
     idea
     `maven-publish`
+    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1-SNAPSHOT"
 }
 
 val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
@@ -20,6 +21,10 @@ version = (
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+}
+
+molly {
+    javaPackage = "io.github.tysonmcnulty.pbj.molly.core.model"
 }
 
 repositories {

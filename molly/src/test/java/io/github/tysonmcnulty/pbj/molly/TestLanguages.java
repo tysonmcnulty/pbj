@@ -214,6 +214,7 @@ public class TestLanguages {
         var definitionMutation = new Unit("mutation", "definition");
 
         var primitive = new Descriptor("primitive");
+        var categorical = new Descriptor("categorical");
         var obviated = new Descriptor("obviated");
         var qualified = new Descriptor("qualified");
 
@@ -253,6 +254,7 @@ public class TestLanguages {
 
         var descriptors = List.of(
             primitive,
+            categorical,
             obviated,
             qualified
         );
@@ -300,6 +302,7 @@ public class TestLanguages {
             new Definition(compositionMutation, unit),
             new Composition(composition, cardinality),
             new Definition(cardinality, cardinalityValues),
+            new Description(composition, categorical),
             new Description(composer, obviated),
             new Description(composer, qualified),
             new Categorization(categorization, relation),

@@ -37,6 +37,7 @@
 - A composer is a kind of operator
 - A composition's mutation is just a unit
 - A composition has cardinality, which is just "one to one" or "one to many"
+- A composition is either categorical or not
 - A composer is either obviated or not
 - A composer is either qualified or not
 

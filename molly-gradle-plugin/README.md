@@ -30,7 +30,7 @@
    }
    
    molly {
-     javaPackage.set("com.example")
+     javaPackage = "com.example"
    }
    ```
    
@@ -71,8 +71,8 @@ The following configuration is equivalent to the default configuration for the p
 
 ```kotlin
 molly {
-    inputFile.set(file("src/main/molly/Language.molly"))
-    javaPackage.set("io.github.tysonmcnulty")
-    outputDir.set(dir("build/generated/sources/molly/main/java"))
+    inputFile = file("src/main/molly/Language.molly")
+    javaPackage = "io.github.tysonmcnulty"
+    outputDir = dir("build/generated/sources/molly/main/java")
 }
 ```

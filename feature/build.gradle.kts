@@ -13,7 +13,7 @@ java {
 }
 
 molly {
-    javaPackage.set("io.github.tysonmcnulty.pbj.feature.core.model")
+    javaPackage = "io.github.tysonmcnulty.pbj.feature.core.model"
 }
 
 repositories {
