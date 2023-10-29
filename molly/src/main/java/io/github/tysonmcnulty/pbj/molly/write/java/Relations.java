@@ -1,4 +1,4 @@
-package io.github.tysonmcnulty.pbj.molly.write;
+package io.github.tysonmcnulty.pbj.molly.write.java;
 
 import com.squareup.javapoet.*;
 import io.github.tysonmcnulty.pbj.molly.core.Language;
@@ -11,8 +11,8 @@ import javax.lang.model.element.Modifier;
 
 import java.util.stream.Collectors;
 
-import static io.github.tysonmcnulty.pbj.molly.write.Syntax.classNameOf;
-import static io.github.tysonmcnulty.pbj.molly.write.Syntax.fieldNameOf;
+import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.classNameOf;
+import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.fieldNameOf;
 import static org.apache.commons.text.WordUtils.capitalize;
 
 public class Relations {

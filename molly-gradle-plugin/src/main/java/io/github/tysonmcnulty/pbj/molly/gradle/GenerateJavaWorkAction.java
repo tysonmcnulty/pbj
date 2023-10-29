@@ -1,7 +1,7 @@
 package io.github.tysonmcnulty.pbj.molly.gradle;
 
 import io.github.tysonmcnulty.pbj.molly.MollyListenerInterpreter;
-import io.github.tysonmcnulty.pbj.molly.write.MollyJavaGenerator;
+import io.github.tysonmcnulty.pbj.molly.write.java.MollyJavaGenerator;
 import org.gradle.workers.WorkAction;
 
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package io.github.tysonmcnulty.pbj.molly.write;
+package io.github.tysonmcnulty.pbj.molly.write.java;
 
 import java.io.Serializable;
 

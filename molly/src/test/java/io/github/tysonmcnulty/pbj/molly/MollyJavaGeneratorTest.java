@@ -1,7 +1,7 @@
 package io.github.tysonmcnulty.pbj.molly;
 
 import io.github.tysonmcnulty.pbj.molly.core.Language;
-import io.github.tysonmcnulty.pbj.molly.write.MollyJavaGenerator;
+import io.github.tysonmcnulty.pbj.molly.write.java.MollyJavaGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

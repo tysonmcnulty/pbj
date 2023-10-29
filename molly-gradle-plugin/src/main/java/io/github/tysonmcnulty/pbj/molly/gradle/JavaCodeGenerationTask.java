@@ -1,6 +1,6 @@
 package io.github.tysonmcnulty.pbj.molly.gradle;
 
-import io.github.tysonmcnulty.pbj.molly.write.MollyJavaGeneratorConfig;
+import io.github.tysonmcnulty.pbj.molly.write.java.MollyJavaGeneratorConfig;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.tasks.*;
 import org.gradle.internal.jvm.Jvm;

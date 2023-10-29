@@ -1,4 +1,4 @@
-package io.github.tysonmcnulty.pbj.molly.write;
+package io.github.tysonmcnulty.pbj.molly.write.java;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;

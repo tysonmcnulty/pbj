@@ -1,4 +1,4 @@
-package io.github.tysonmcnulty.pbj.molly.write;
+package io.github.tysonmcnulty.pbj.molly.write.java;
 
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.diffplug.spotless.Formatter.NO_FILE_SENTINEL;
-import static io.github.tysonmcnulty.pbj.molly.write.Syntax.classNameOf;
+import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.classNameOf;
 
 public class MollyJavaGenerator {
 
