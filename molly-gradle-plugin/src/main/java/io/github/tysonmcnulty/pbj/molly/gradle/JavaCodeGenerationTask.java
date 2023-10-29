@@ -1,11 +1,7 @@
 package io.github.tysonmcnulty.pbj.molly.gradle;
 
 import io.github.tysonmcnulty.pbj.molly.write.MollyJavaGeneratorConfig;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.JavaVersion;
-import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 import org.gradle.internal.jvm.Jvm;
 import org.gradle.workers.WorkerExecutor;
@@ -14,7 +10,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 
-abstract public class GenerateJavaTask extends DefaultTask {
+abstract public class JavaCodeGenerationTask extends CodeGenerationTask {
 
     private static final List<String> EXTRA_JAVA16_JVM_ARGS = List.of(
         "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
@@ -27,16 +23,6 @@ abstract public class GenerateJavaTask extends DefaultTask {
 
     @Inject
     abstract public WorkerExecutor getWorkerExecutor();
-
-    @Input
-    @Optional
-    abstract public Property<String> getJavaPackage();
-
-    @InputFile
-    abstract public RegularFileProperty getInputFile();
-
-    @OutputDirectory
-    abstract public DirectoryProperty getOutputDir();
 
     @TaskAction
     public void execute() {

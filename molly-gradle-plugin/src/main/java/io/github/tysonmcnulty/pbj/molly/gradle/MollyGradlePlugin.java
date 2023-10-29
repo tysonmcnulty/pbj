@@ -1,5 +1,6 @@
 package io.github.tysonmcnulty.pbj.molly.gradle;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
@@ -22,7 +23,7 @@ public class MollyGradlePlugin implements Plugin<Project> {
     public void apply(Project project) {
         var extension = project.getExtensions().create("molly", MollyExtension.class);
 
-        project.getTasks().register("generateJava", GenerateJavaTask.class, task -> {
+        Action<CodeGenerationTask> codeGenerationTask = task -> {
             task.getJavaPackage().set(extension.getJavaPackage());
 
             var inputFileProperty = extension.getInputFile()
@@ -36,7 +37,10 @@ public class MollyGradlePlugin implements Plugin<Project> {
                             DEFAULT_OUTPUT_DIR_LOCATION.toString()));
 
             task.getOutputDir().set(outputDirProperty);
-        });
+        };
+
+        project.getTasks().register("generateJava", JavaCodeGenerationTask.class, codeGenerationTask);
+        project.getTasks().register("generateProto", ProtoCodeGenerationTask.class, codeGenerationTask);
 
         var sourceSetNameProperty = extension.getSourceSetName()
                 .convention(DEFAULT_SOURCE_SET_NAME);
