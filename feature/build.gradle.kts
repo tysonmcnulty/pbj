@@ -4,7 +4,7 @@ plugins {
     idea
     `java-library`
     kotlin("jvm") version "1.6.21"
-    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1-SNAPSHOT"
+    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1"
 }
 
 java {

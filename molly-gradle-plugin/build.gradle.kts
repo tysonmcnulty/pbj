@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.tysonmcnulty.pbj"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.tysonmcnulty.pbj:molly:0.0.6-SNAPSHOT")
+    implementation("io.github.tysonmcnulty.pbj:molly:0.0.6")
 }
 
 publishing {

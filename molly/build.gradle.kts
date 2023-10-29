@@ -5,7 +5,7 @@ plugins {
     antlr
     idea
     `maven-publish`
-    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1-SNAPSHOT"
+    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1"
 }
 
 val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
