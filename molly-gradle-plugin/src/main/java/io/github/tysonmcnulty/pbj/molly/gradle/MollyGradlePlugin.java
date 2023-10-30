@@ -3,6 +3,8 @@ package io.github.tysonmcnulty.pbj.molly.gradle;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -13,7 +15,7 @@ import java.nio.file.Paths;
 public class MollyGradlePlugin implements Plugin<Project> {
 
     public static final Path DEFAULT_OUTPUT_DIR_LOCATION
-            = Paths.get("build", "generated", "sources", "molly", "main", "java");
+            = Paths.get("build", "generated", "sources", "molly");
     public static final Path DEFAULT_INPUT_FILE_LOCATION
             = Paths.get("src", "main", "molly", "Language.molly");
     public static final String DEFAULT_SOURCE_SET_NAME
@@ -23,7 +25,7 @@ public class MollyGradlePlugin implements Plugin<Project> {
     public void apply(Project project) {
         var extension = project.getExtensions().create("molly", MollyExtension.class);
 
-        Action<CodeGenerationTask> codeGenerationTask = task -> {
+        project.getTasks().register("generateJava", JavaCodeGenerationTask.class, task -> {
             task.getJavaPackage().set(extension.getJavaPackage());
 
             var inputFileProperty = extension.getInputFile()
@@ -36,11 +38,26 @@ public class MollyGradlePlugin implements Plugin<Project> {
                     .convention(project.getLayout().getProjectDirectory().dir(
                             DEFAULT_OUTPUT_DIR_LOCATION.toString()));
 
-            task.getOutputDir().set(outputDirProperty);
-        };
+            task.getOutputDir().set(outputDirProperty.dir(
+                    Paths.get("main", "java").toString()));
+        });
 
-        project.getTasks().register("generateJava", JavaCodeGenerationTask.class, codeGenerationTask);
-        project.getTasks().register("generateProto", ProtoCodeGenerationTask.class, codeGenerationTask);
+        project.getTasks().register("generateProto", ProtoCodeGenerationTask.class, task -> {
+            task.getJavaPackage().set(extension.getJavaPackage());
+
+            var inputFileProperty = extension.getInputFile()
+                    .convention(project.getLayout().getProjectDirectory().file(
+                            DEFAULT_INPUT_FILE_LOCATION.toString()));
+
+            task.getInputFile().set(inputFileProperty);
+
+            var outputDirProperty = extension.getOutputDir()
+                    .convention(project.getLayout().getProjectDirectory().dir(
+                            DEFAULT_OUTPUT_DIR_LOCATION.toString()));
+
+            task.getOutputDir().set(outputDirProperty.dir(
+                    Paths.get("main", "proto").toString()));
+        });
 
         var sourceSetNameProperty = extension.getSourceSetName()
                 .convention(DEFAULT_SOURCE_SET_NAME);

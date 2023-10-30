@@ -5,7 +5,7 @@ plugins {
     antlr
     idea
     `maven-publish`
-    id("io.github.tysonmcnulty.pbj.molly") version "0.0.1"
+    id("io.github.tysonmcnulty.pbj.molly") version "0.0.2-SNAPSHOT"
 }
 
 val grammarPackageName = "io.github.tysonmcnulty.pbj.molly"
@@ -39,6 +39,7 @@ dependencies {
     implementation("org.antlr:antlr4-runtime:4.9.3")
     implementation("org.apache.commons:commons-text:1.10.0")
     implementation("com.google.googlejavaformat:google-java-format:1.17.0")
+    implementation("com.google.protobuf:protobuf-kotlin:3.24.0")
     implementation("com.squareup:javapoet:1.13.0")
     implementation("com.hypertino:inflector_2.13:1.0.13")
     implementation("com.diffplug.spotless:spotless-lib:2.38.0")

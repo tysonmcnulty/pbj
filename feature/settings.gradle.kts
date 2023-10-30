@@ -13,3 +13,5 @@ pluginManagement {
         }
     }
 }
+
+includeBuild("../molly-gradle-plugin")
