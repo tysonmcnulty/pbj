@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 
-abstract public class JavaCodeGenerationTask extends CodeGenerationTask {
+abstract public class JavaGenerationTask extends CodeGenerationTask {
 
     private static final List<String> EXTRA_JAVA16_JVM_ARGS = List.of(
         "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",

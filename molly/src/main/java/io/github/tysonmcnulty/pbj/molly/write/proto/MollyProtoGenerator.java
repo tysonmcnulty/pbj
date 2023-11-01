@@ -31,10 +31,13 @@ public class MollyProtoGenerator {
         System.out.println("output base dir: " + dir);
         System.out.println("java package: " + config.getJavaPackage());
 
-        var protoBuilder = DescriptorProtos.FileDescriptorProto.newBuilder();
+        var protoFileDescriptorBuilder = DescriptorProtos.FileDescriptorProto.newBuilder();
 
-        protoBuilder
-                .setPackage("example")
+        protoFileDescriptorBuilder
+                .setName("model.proto")
+                .setPackage("molly")
+                .setOptions(DescriptorProtos.FileOptions.newBuilder()
+                        .setJavaPackage(config.getJavaPackage() + ".proto"))
                 .setEdition("2023")
                 .setSyntax("proto3")
                 .addMessageType(DescriptorProtos.DescriptorProto.newBuilder()
@@ -49,19 +52,16 @@ public class MollyProtoGenerator {
                                 .setNumber(2)
                                 .setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED)));
 
-        Preconditions.checkArgument(Files.notExists(dir) || Files.isDirectory(dir),
-                "path %s exists but is not a directory.", dir);
+        var fileDescriptorSetBuilder = DescriptorProtos.FileDescriptorSet.newBuilder()
+                .addFile(protoFileDescriptorBuilder);
         try {
             Files.createDirectories(dir);
-            var outputFile = dir.resolve("example.proto");
-            var proto = protoBuilder.build();
-            var fileDescriptor = Descriptors.FileDescriptor.buildFrom(proto, new Descriptors.FileDescriptor[]{});
-            System.out.println("file descriptor: " + fileDescriptor);
-            protoBuilder.build().writeTo(Files.newOutputStream(outputFile));
+            Preconditions.checkArgument(Files.notExists(dir) || Files.isDirectory(dir),
+                    "path %s exists but is not a directory.", dir);
+            var outputFile = dir.resolve("language.desc");
+            fileDescriptorSetBuilder.build().writeTo(Files.newOutputStream(outputFile));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
-        } catch (Descriptors.DescriptorValidationException e) {
-            throw new RuntimeException(e);
         }
     }
 }

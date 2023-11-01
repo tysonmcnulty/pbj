@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.UncheckedIOException;
 
-abstract public class ProtoCodeGenerationTask extends CodeGenerationTask {
+abstract public class DescriptorSetGenerationTask extends CodeGenerationTask {
 
     @TaskAction
     public void execute() {

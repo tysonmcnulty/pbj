@@ -8,6 +8,7 @@
 # Project
 build
 .envrc
+/out
 
 # OS
 .DS_Store
