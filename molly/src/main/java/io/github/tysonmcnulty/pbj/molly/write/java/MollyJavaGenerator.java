@@ -63,9 +63,7 @@ public class MollyJavaGenerator {
                 .map((unit) -> Map.entry(unit.getName(), createTypeSpecBuilder(unit)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
 
-            language.getRelations().forEach((relation) -> {
-                apply(relation, buildersByName);
-            });
+            language.getRelations().forEach((relation) -> apply(relation, buildersByName));
 
             unitsToWrite.forEach(unit -> {
                 if (unit.getContext().isPresent()) {

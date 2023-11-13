@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package molly;
+
+option java_package = "io.github.tysonmcnulty.model";
+
+message PBJ {
+  repeated Bread.Slice slices = 1;
+}
+
+message Bread {
+  message Slice {
+
+  }
+}
