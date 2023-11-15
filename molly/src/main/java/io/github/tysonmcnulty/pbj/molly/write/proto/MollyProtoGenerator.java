@@ -15,6 +15,8 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.messageNameOf;
+
 public class MollyProtoGenerator {
 
     public MollyProtoGenerator(Language language) {
@@ -74,7 +76,7 @@ public class MollyProtoGenerator {
     }
 
     private DescriptorProtos.DescriptorProto.Builder createMessageBuilder(Unit unit) {
-        return DescriptorProtos.DescriptorProto.newBuilder().setName(unit.getName());
+        return DescriptorProtos.DescriptorProto.newBuilder().setName(messageNameOf(unit.getName()));
     }
 
     @NotNull
