@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import static com.diffplug.spotless.Formatter.NO_FILE_SENTINEL;
 import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.classNameOf;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 
 public class MollyJavaGenerator {
 
@@ -59,55 +60,52 @@ public class MollyJavaGenerator {
                 .filter((unit) -> !definitionMutants.contains(unit))
                 .collect(Collectors.toList());
 
-            Map<String, TypeSpec.Builder> buildersByName = unitsToWrite.stream()
-                .map((unit) -> Map.entry(unit.getName(), createTypeSpecBuilder(unit)))
+            Map<String, TypeSpec.Builder> buildersByUnitName = unitsToWrite.stream()
+                .map((unit) -> Map.entry(unit.getUnitName(), createTypeSpecBuilder(unit)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
 
-            language.getRelations().forEach((relation) -> apply(relation, buildersByName));
+            language.getRelations().forEach((relation) -> apply(relation, buildersByUnitName));
+
+            var categorizer = language.getCategorizer();
+
+            var typeSpecs = buildersByUnitName.entrySet().stream()
+                    .map(e -> Map.entry(e.getKey(), e.getValue().build()))
+                    .collect(toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            unitsToWrite.forEach(unit -> {
+                var parents = categorizer.apply(unit.getUnitName());
+                var childrenMustBeAbstract = false;
+                for (var i = parents.size() - 1; i >= 0; i--) {
+                    var parentTypeSpec = typeSpecs.get(parents.get(i).getUnitName());
+                    if (parentTypeSpec.hasModifier(Modifier.ABSTRACT)) {
+                        childrenMustBeAbstract = true;
+                    }
+                    if (i > 0 || childrenMustBeAbstract) {
+                        buildersByUnitName.get(parents.get(i).getUnitName())
+                                .addModifiers(Modifier.ABSTRACT);
+                    }
+                }
+            });
 
             unitsToWrite.forEach(unit -> {
                 if (unit.getContext().isPresent()) {
-                    var outerContextBuilder = buildersByName.computeIfAbsent(
+                    var outerContextBuilder = buildersByUnitName.computeIfAbsent(
                         unit.getContext().get(),
                         contextName -> TypeSpec
                             .classBuilder(classNameOf(contextName))
                             .addModifiers(Modifier.PUBLIC));
 
-                    var innerTermBuilder = buildersByName.remove(unit.getName());
+                    var innerTermBuilder = buildersByUnitName.remove(unit.getUnitName());
 
                     outerContextBuilder.addType(
                         innerTermBuilder
                             .addModifiers(Modifier.STATIC)
                             .build());
-
                 }
             });
 
-            var categorizationsByMutantName = language.getRelations().stream()
-                .filter(r -> r instanceof Categorization)
-                .map(r -> (Categorization) r)
-                .collect(Collectors.toUnmodifiableMap(c -> c.getMutant().getUnitName(), c -> c));
-
-            var categorizationScore = getUnitNameComparator(categorizationsByMutantName);
-
-            var sortedBuilderEntries = buildersByName.entrySet().stream()
-                .sorted(Comparator.comparingInt(e -> categorizationScore.apply(e.getKey())))
-                .collect(Collectors.toList());
-
-            Map<String, TypeSpec> typeSpecs = new HashMap<>();
-            for (var entry : sortedBuilderEntries) {
-                var builder = entry.getValue();
-                if (categorizationsByMutantName.containsKey(entry.getKey())) {
-                    var parent = categorizationsByMutantName.get(entry.getKey()).getMutation();
-                    var parentTypeSpec = typeSpecs.get(parent.getUnitName());
-                    if (parentTypeSpec.hasModifier(Modifier.ABSTRACT)) {
-                        builder.addModifiers(Modifier.ABSTRACT);
-                    }
-                }
-                typeSpecs.put(entry.getKey(), builder.build());
-            }
-
-            for (var typeSpec : typeSpecs.values()) {
+            for (var builder : buildersByUnitName.values()) {
+                var typeSpec = builder.build();
                 JavaFile javaFile = JavaFile.builder(config.getJavaPackage(), typeSpec).build();
                 Path outputFile = getFilePath(javaFile, dir);
 
@@ -151,21 +149,6 @@ public class MollyJavaGenerator {
         }
     }
 
-    private static Function<String, Integer> getUnitNameComparator(Map<String, Categorization> categorizationsByMutantName) {
-        return (name) -> {
-            var score = 0;
-            var curr = name;
-            do {
-                var nextCategorization = categorizationsByMutantName.getOrDefault(curr, null);
-                if (nextCategorization == null) {
-                    return score;
-                }
-                score++;
-                curr = nextCategorization.getMutation().getName();
-            } while (true);
-        };
-    }
-
     private TypeSpec.Builder createTypeSpecBuilder(Unit unit) {
         return (unit instanceof Enumeration)
             ? createEnumBuilder((Enumeration) unit)
@@ -203,7 +186,7 @@ public class MollyJavaGenerator {
     }
 
     private void apply(Relation<?, ?> relation, Map<String, TypeSpec.Builder> buildersByName) {
-        var builder = buildersByName.get(relation.getMutant().getName());
+        var builder = buildersByName.get(relation.getMutant().getUnitName());
         if (relation instanceof Composition) {
             Relations.applyComposition((Composition) relation, builder, language, config);
         } else if (relation instanceof Categorization) {

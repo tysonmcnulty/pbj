@@ -1,7 +1,7 @@
 package io.github.tysonmcnulty;
 
 
-public class Term {
+public abstract class Term {
     protected String name;
 
     public String getName() {

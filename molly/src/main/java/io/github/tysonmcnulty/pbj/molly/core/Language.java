@@ -1,11 +1,13 @@
 package io.github.tysonmcnulty.pbj.molly.core;
 
+import io.github.tysonmcnulty.pbj.molly.core.relation.Categorization;
 import io.github.tysonmcnulty.pbj.molly.core.relation.Definition;
 import io.github.tysonmcnulty.pbj.molly.core.relation.Relation;
 import io.github.tysonmcnulty.pbj.molly.core.term.Descriptor;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,5 +89,30 @@ public class Language {
 
     public Descriptor getDescriptorByName(String descriptorName) {
         return descriptorsByName.get(descriptorName);
+    }
+
+    public Stream<Categorization> getCategorizations() {
+        return getRelations().stream()
+                .filter(r -> r instanceof Categorization)
+                .map(r -> (Categorization) r);
+    }
+    public Function<String, List<Unit>> getCategorizer() {
+        var categorizationsByMutantUnitName = getCategorizations()
+                .collect(Collectors.toUnmodifiableMap(c -> c.getMutant().getUnitName(), c -> c));
+
+        return (unitName) -> {
+            var units = new ArrayList<Unit>();
+            var unit = getUnitByName(unitName);
+            units.add(getUnitByName(unitName));
+            do {
+                var curr = units.get(units.size() - 1);
+                var currentUnitName = curr.getUnitName();
+                var nextCategorization = categorizationsByMutantUnitName.getOrDefault(currentUnitName, null);
+                if (nextCategorization == null) {
+                    return units;
+                }
+                units.add(nextCategorization.getMutation());
+            } while (true);
+        };
     }
 }

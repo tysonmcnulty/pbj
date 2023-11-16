@@ -1,6 +1,6 @@
 package io.github.tysonmcnulty;
 
-public class Relation<MutationType extends Term, OperatorType extends Operator> {
+public abstract class Relation<MutationType extends Term, OperatorType extends Operator> {
     protected Unit mutant;
 
     protected MutationType mutation;

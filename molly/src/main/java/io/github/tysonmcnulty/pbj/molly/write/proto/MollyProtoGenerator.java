@@ -47,16 +47,6 @@ public class MollyProtoGenerator {
 
         language.getRelations().forEach((relation) -> apply(relation, buildersByName));
 
-        // iterate through relations and add specifications to messages corresponding to mutants
-        // - categorizations get tricky
-        //   - how about fields that appear on the supertype? how do those get preserved in the subtype?
-        //     - for protobufs, "there are no supertypes" I guess. We have to cast "up" within the abstract class.
-        // - descriptions create bool fields
-        // - compositions are simple enough
-        //   - what about categorical compositions?
-        //     - it's a subtyping issue again. I guess we'll see.
-        //     - I think having a "container" will help the protobuf compatibility.
-
         // create a file descriptor set builder
         var protoFileDescriptorBuilder = createFileDescriptorBuilder();
         buildersByName.values().forEach(protoFileDescriptorBuilder::addMessageType);

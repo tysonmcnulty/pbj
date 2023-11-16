@@ -1,3 +1,3 @@
 package io.github.tysonmcnulty;
 
-public class Operator {}
+public abstract class Operator {}
