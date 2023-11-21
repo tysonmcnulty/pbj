@@ -8,7 +8,6 @@ import io.github.tysonmcnulty.pbj.molly.core.relation.Definition;
 import io.github.tysonmcnulty.pbj.molly.core.relation.Description;
 
 import javax.lang.model.element.Modifier;
-
 import java.util.stream.Collectors;
 
 import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.classNameOf;

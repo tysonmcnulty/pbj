@@ -1,8 +1,6 @@
 package io.github.tysonmcnulty.pbj.molly.write.proto;
 
 import com.google.protobuf.DescriptorProtos;
-import com.google.protobuf.Descriptors;
-import com.google.protobuf.Type;
 import io.github.tysonmcnulty.pbj.molly.core.term.Enumeration;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
 import org.apache.commons.text.WordUtils;

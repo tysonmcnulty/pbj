@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.tysonmcnulty.pbj:molly:0.0.6-SNAPSHOT")
+    implementation("io.github.tysonmcnulty.pbj:molly:0.0.7-SNAPSHOT")
 }
 
 publishing {

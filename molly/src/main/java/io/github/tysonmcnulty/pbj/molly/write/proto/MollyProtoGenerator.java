@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.DescriptorProtos;
 import io.github.tysonmcnulty.pbj.molly.core.Language;
 import io.github.tysonmcnulty.pbj.molly.core.relation.*;
-import io.github.tysonmcnulty.pbj.molly.core.term.Term;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,16 +41,33 @@ public class MollyProtoGenerator {
                 .filter((unit) -> !definitionMutants.contains(unit))
                 .collect(Collectors.toList());
 
-        Map<String, DescriptorProtos.DescriptorProto.Builder> buildersByName = unitsToWrite.stream()
-                .collect(Collectors.toMap(Term::getName, this::createMessageBuilder, (a, b) -> a));
+        Map<String, DescriptorProtos.DescriptorProto.Builder> buildersByUnitName = unitsToWrite.stream()
+                .collect(Collectors.toMap(Unit::getUnitName, this::createMessageBuilder, (a, b) -> a));
 
-        language.getRelations().forEach((relation) -> apply(relation, buildersByName));
+        var context = new MollyProtoGenerationContext(
+                buildersByUnitName,
+                language,
+                config
+        );
 
-        // create a file descriptor set builder
+        language.getRelations().forEach((relation) -> apply(relation, context));
+
+        unitsToWrite.forEach(unit -> {
+            if (unit.getContext().isPresent()) {
+                var outerMessageBuilder = buildersByUnitName.computeIfAbsent(
+                        unit.getContext().get(),
+                        contextName -> DescriptorProtos.DescriptorProto.newBuilder()
+                                .setName(messageNameOf(contextName)));
+
+                var innerMessageBuilder = buildersByUnitName.remove(unit.getUnitName());
+
+                outerMessageBuilder.addNestedType(innerMessageBuilder);
+            }
+        });
+
         var protoFileDescriptorBuilder = createFileDescriptorBuilder();
-        buildersByName.values().forEach(protoFileDescriptorBuilder::addMessageType);
+        buildersByUnitName.values().forEach(protoFileDescriptorBuilder::addMessageType);
 
-        // create set builder and write it out
         var fileDescriptorSetBuilder = DescriptorProtos.FileDescriptorSet.newBuilder()
                 .addFile(protoFileDescriptorBuilder);
         try {
@@ -80,14 +96,13 @@ public class MollyProtoGenerator {
                 .setSyntax("proto3");
     }
 
-    private void apply(Relation<?, ?> relation, Map<String, DescriptorProtos.DescriptorProto.Builder> buildersByName) {
-        var builder = buildersByName.get(relation.getMutant().getName());
+    private void apply(Relation<?, ?> relation, MollyProtoGenerationContext context) {
         if (relation instanceof Composition) {
-            Relations.applyComposition((Composition) relation, builder, language, config);
+            Relations.applyComposition((Composition) relation, context);
         } else if (relation instanceof Categorization) {
-            Relations.applyCategorization((Categorization) relation, builder, language, config);
+            Relations.applyCategorization((Categorization) relation, context);
         } else if (relation instanceof Description) {
-            Relations.applyDescription((Description) relation, builder);
+            Relations.applyDescription((Description) relation, context);
         }
     }
 }
