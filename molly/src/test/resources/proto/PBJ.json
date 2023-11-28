@@ -1,0 +1,59 @@
+{
+  "file": [{
+    "name": "model.proto",
+    "package": "molly",
+    "messageType": [{
+      "name": "Bread",
+      "nestedType": [{
+        "name": "Slice"
+      }, {
+        "name": "Loaf",
+        "field": [{
+          "name": "slices",
+          "number": 1,
+          "label": "LABEL_REPEATED",
+          "type": "TYPE_MESSAGE",
+          "typeName": "Bread.Slice"
+        }]
+      }]
+    }, {
+      "name": "PeanutButter"
+    }, {
+      "name": "PBJ",
+      "field": [{
+        "name": "slices",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Bread.Slice"
+      }, {
+        "name": "peanutButter",
+        "number": 2,
+        "type": "TYPE_MESSAGE",
+        "typeName": "PeanutButter"
+      }, {
+        "name": "jelly",
+        "number": 3,
+        "type": "TYPE_MESSAGE",
+        "typeName": "Jelly"
+      }]
+    }, {
+      "name": "Jar",
+      "field": [{
+        "name": "spread",
+        "number": 1,
+        "type": "TYPE_MESSAGE",
+        "typeName": "Spread"
+      }]
+    }, {
+      "name": "Jelly"
+    }, {
+      "name": "Spread"
+    }],
+    "options": {
+      "javaPackage": "io.github.tysonmcnulty.proto"
+    },
+    "syntax": "proto3",
+    "edition": "2023"
+  }]
+}

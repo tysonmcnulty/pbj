@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Language {
-    Map<String, Unit> unitsByName = new LinkedHashMap<>();
-    Map<String, Descriptor> descriptorsByName = new LinkedHashMap<>();
-    Set<Relation<?, ?>> relations = new LinkedHashSet<>();
+    private final Map<String, Unit> unitsByName = new LinkedHashMap<>();
+    private final Map<String, Descriptor> descriptorsByName = new LinkedHashMap<>();
+    private final Set<Relation<?, ?>> relations = new LinkedHashSet<>();
+    private final Map<String, Set<Unit>> childrenByUnitName = new HashMap<>();
+    private final Map<String, Set<Unit>> parentsByUnitName = new HashMap<>();
 
     @Override
     public boolean equals(Object o) {
@@ -53,6 +55,16 @@ public class Language {
 
     public void addRelation(Relation<?, ?> relation) {
         this.relations.add(relation);
+
+        if (relation instanceof Categorization) {
+            var categorization = (Categorization) relation;
+            var parent = categorization.getMutation();
+            var child = categorization.getMutant();
+            this.childrenByUnitName.computeIfAbsent(parent.getUnitName(), (s) -> new HashSet<>())
+                    .add(child);
+            this.parentsByUnitName.computeIfAbsent(child.getUnitName(), (s) -> new HashSet<>())
+                    .add(parent);
+        }
     }
 
     public Stream<Unit> getUnits() {
@@ -114,5 +126,13 @@ public class Language {
                 units.add(nextCategorization.getMutation());
             } while (true);
         };
+    }
+
+    public Set<Unit> getChildren(Unit unit) {
+        return childrenByUnitName.computeIfAbsent(unit.getUnitName(), (s) -> new HashSet<>());
+    }
+
+    public Set<Unit> getParents(Unit unit) {
+        return parentsByUnitName.computeIfAbsent(unit.getUnitName(), (s) -> new HashSet<>());
     }
 }

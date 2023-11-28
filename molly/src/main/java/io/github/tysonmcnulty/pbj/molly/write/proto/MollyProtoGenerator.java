@@ -5,7 +5,6 @@ import com.google.protobuf.DescriptorProtos;
 import io.github.tysonmcnulty.pbj.molly.core.Language;
 import io.github.tysonmcnulty.pbj.molly.core.relation.*;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,7 +30,19 @@ public class MollyProtoGenerator {
     }
 
     public void write(Path dir) {
-        // create collection of message builders for each standalone unit
+        var fileDescriptorSetBuilder = createFileDescriptorSetBuilder();
+        try {
+            Files.createDirectories(dir);
+            Preconditions.checkArgument(Files.notExists(dir) || Files.isDirectory(dir),
+                    "path %s exists but is not a directory.", dir);
+            var outputFile = dir.resolve("language.desc");
+            fileDescriptorSetBuilder.build().writeTo(Files.newOutputStream(outputFile));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public DescriptorProtos.FileDescriptorSet.Builder createFileDescriptorSetBuilder() {
         var definitionMutants = language.getRelations().stream()
                 .filter(r -> r instanceof Definition)
                 .map(Relation::getMutant)
@@ -68,24 +79,14 @@ public class MollyProtoGenerator {
         var protoFileDescriptorBuilder = createFileDescriptorBuilder();
         buildersByUnitName.values().forEach(protoFileDescriptorBuilder::addMessageType);
 
-        var fileDescriptorSetBuilder = DescriptorProtos.FileDescriptorSet.newBuilder()
+        return DescriptorProtos.FileDescriptorSet.newBuilder()
                 .addFile(protoFileDescriptorBuilder);
-        try {
-            Files.createDirectories(dir);
-            Preconditions.checkArgument(Files.notExists(dir) || Files.isDirectory(dir),
-                    "path %s exists but is not a directory.", dir);
-            var outputFile = dir.resolve("language.desc");
-            fileDescriptorSetBuilder.build().writeTo(Files.newOutputStream(outputFile));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     private DescriptorProtos.DescriptorProto.Builder createMessageBuilder(Unit unit) {
         return DescriptorProtos.DescriptorProto.newBuilder().setName(messageNameOf(unit.getName()));
     }
 
-    @NotNull
     private DescriptorProtos.FileDescriptorProto.Builder createFileDescriptorBuilder() {
         return DescriptorProtos.FileDescriptorProto.newBuilder()
                 .setName("model.proto")

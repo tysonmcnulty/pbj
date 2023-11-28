@@ -17,40 +17,6 @@ import static io.github.tysonmcnulty.pbj.molly.core.relation.Cardinality.ONE_TO_
 
 public class TestLanguages {
 
-    private static Language kitchen() {
-        var language = new Language();
-
-        var bread = Unit.fromInflectedName("bread");
-        var countertop = Unit.fromInflectedName("countertop");
-        var food = Unit.fromInflectedName("food");
-        var kitchen = Unit.fromInflectedName("kitchen");
-        var pantry = Unit.fromInflectedName("pantry");
-        var sealed = new Descriptor("sealed", "unsealed");
-
-        var units = List.of(
-            bread,
-            countertop,
-            food,
-            kitchen,
-            pantry
-        );
-        List<Descriptor> descriptors = List.of(
-            sealed
-        );
-        var relations = List.of(
-            new Composition(kitchen, countertop),
-            new Composition.Builder(pantry, food).cardinality(ONE_TO_MANY).build(),
-            new Categorization(bread, food),
-            new Description(bread, sealed)
-        );
-
-        units.forEach(language::addUnit);
-        descriptors.forEach(language::addDescriptor);
-        relations.forEach(language::addRelation);
-
-        return language;
-    }
-
     private static Language pbj() {
         var language = new Language();
 
@@ -330,7 +296,6 @@ public class TestLanguages {
 
     public static Language get(String languageName) {
         var key = languageName.toLowerCase();
-        if (key.equals("kitchen")) return kitchen();
         if (key.equals("pbj")) return pbj();
         if (key.equals("blackjack")) return blackjack();
         if (key.equals("molly")) return molly();
