@@ -2,26 +2,15 @@ package io.github.tysonmcnulty.pbj.molly.write.java;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
-import io.github.tysonmcnulty.pbj.molly.core.term.Enumeration;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
 import org.apache.commons.text.WordUtils;
 
-import java.util.List;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.toList;
 
 public class Syntax {
     public static String classNameOf(String termName) {
         if (termName.matches("[A-Z]+")) return termName;
         return WordUtils.capitalizeFully(termName).replaceAll("\\W", "");
-    }
-
-    public static List<String> enumValuesOf(Enumeration enumeration) {
-        return enumeration.getValues().stream()
-                .map((value) -> enumeration.getName().toUpperCase().replaceAll("\\W", "_")
-                    + "_" + value.toUpperCase())
-                .collect(toList());
     }
 
     public static String fieldNameOf(String termName) {

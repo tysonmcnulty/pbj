@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MollyProtoGeneratorTest {
     @DisplayName("generator creates proto for language")
     @ParameterizedTest(name = "{0}.molly ==> proto/{0}.json")
-    @ValueSource(strings = {"PBJ", "Shelter", "Blackjack"})
+    @ValueSource(strings = {"PBJ", "Shelter", "Blackjack", "Molly"})
     public void generator_creates_proto_for_language(String languageName) throws IOException {
         Language language = TestLanguages.get(languageName);
 

@@ -5,16 +5,27 @@ import io.github.tysonmcnulty.pbj.molly.core.term.Enumeration;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
 import org.apache.commons.text.WordUtils;
 
+import java.util.List;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
 
 public class Syntax {
     public static String messageNameOf(String termName) {
         if (termName.matches("[A-Z]+")) return termName;
-        return WordUtils.capitalizeFully(termName).replaceAll("\\W", "");
+        return WordUtils.capitalizeFully(termName).replaceAll("\\W+", "");
+    }
+
+
+    public static List<String> enumValuesOf(Enumeration enumeration) {
+        return enumeration.getValues().stream()
+                .map((value) -> (enumeration.getName()
+                        + "_" + value).toUpperCase().replaceAll("\\W+", "_"))
+                .collect(toList());
     }
 
     public static String fieldNameOf(String termName) {
-        return termName.toLowerCase().replaceAll("\\W", "_");
+        return termName.toLowerCase().replaceAll("\\W+", "_");
     }
 
     public static String typeNameOf(Unit unit) {

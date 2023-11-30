@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.enumValuesOf;
+import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.enumValuesOf;
 import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.messageNameOf;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
