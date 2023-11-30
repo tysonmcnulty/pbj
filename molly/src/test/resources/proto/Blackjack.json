@@ -1,0 +1,166 @@
+{
+  "file": [{
+    "name": "model.proto",
+    "package": "molly",
+    "messageType": [{
+      "name": "Chip",
+      "field": [{
+        "name": "value",
+        "number": 1,
+        "type": "TYPE_SINT32"
+      }]
+    }, {
+      "name": "Deck",
+      "field": [{
+        "name": "cards",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Card"
+      }]
+    }, {
+      "name": "Dealer",
+      "field": [{
+        "name": "hand",
+        "number": 1,
+        "label": "LABEL_OPTIONAL",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Hand"
+      }]
+    }, {
+      "name": "Table",
+      "field": [{
+        "name": "players",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Player"
+      }, {
+        "name": "dealer",
+        "number": 2,
+        "type": "TYPE_MESSAGE",
+        "typeName": "Dealer"
+      }, {
+        "name": "shoe",
+        "number": 3,
+        "type": "TYPE_MESSAGE",
+        "typeName": "Shoe"
+      }]
+    }, {
+      "name": "Shoe",
+      "field": [{
+        "name": "cards",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Card"
+      }]
+    }, {
+      "name": "Card",
+      "field": [{
+        "name": "rank",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "RankValue"
+      }, {
+        "name": "suit",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "SuitValue"
+      }]
+    }, {
+      "name": "Player",
+      "field": [{
+        "name": "chips",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Chip"
+      }, {
+        "name": "hand",
+        "number": 2,
+        "label": "LABEL_OPTIONAL",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Hand"
+      }]
+    }, {
+      "name": "Hand",
+      "field": [{
+        "name": "cards",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Card"
+      }]
+    }],
+    "enumType": [{
+      "name": "SuitValue",
+      "value": [{
+        "name": "SUIT_VALUE_UNRECOGNIZED",
+        "number": 0
+      }, {
+        "name": "SUIT_VALUE_CLUB",
+        "number": 1
+      }, {
+        "name": "SUIT_VALUE_DIAMOND",
+        "number": 2
+      }, {
+        "name": "SUIT_VALUE_HEART",
+        "number": 3
+      }, {
+        "name": "SUIT_VALUE_SPADE",
+        "number": 4
+      }]
+    }, {
+      "name": "RankValue",
+      "value": [{
+        "name": "RANK_VALUE_UNRECOGNIZED",
+        "number": 0
+      }, {
+        "name": "RANK_VALUE_ACE",
+        "number": 1
+      }, {
+        "name": "RANK_VALUE_TWO",
+        "number": 2
+      }, {
+        "name": "RANK_VALUE_THREE",
+        "number": 3
+      }, {
+        "name": "RANK_VALUE_FOUR",
+        "number": 4
+      }, {
+        "name": "RANK_VALUE_FIVE",
+        "number": 5
+      }, {
+        "name": "RANK_VALUE_SIX",
+        "number": 6
+      }, {
+        "name": "RANK_VALUE_SEVEN",
+        "number": 7
+      }, {
+        "name": "RANK_VALUE_EIGHT",
+        "number": 8
+      }, {
+        "name": "RANK_VALUE_NINE",
+        "number": 9
+      }, {
+        "name": "RANK_VALUE_TEN",
+        "number": 10
+      }, {
+        "name": "RANK_VALUE_JACK",
+        "number": 11
+      }, {
+        "name": "RANK_VALUE_QUEEN",
+        "number": 12
+      }, {
+        "name": "RANK_VALUE_KING",
+        "number": 13
+      }]
+    }],
+    "options": {
+      "javaPackage": "io.github.tysonmcnulty.proto"
+    },
+    "syntax": "proto3",
+    "edition": "2023"
+  }]
+}

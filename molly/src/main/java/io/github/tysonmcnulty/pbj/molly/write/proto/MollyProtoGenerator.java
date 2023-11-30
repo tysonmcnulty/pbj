@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.DescriptorProtos;
 import io.github.tysonmcnulty.pbj.molly.core.Language;
 import io.github.tysonmcnulty.pbj.molly.core.relation.*;
+import io.github.tysonmcnulty.pbj.molly.core.term.Enumeration;
 import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
 
 import java.io.IOException;
@@ -13,7 +14,10 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.enumValuesOf;
 import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.messageNameOf;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MollyProtoGenerator {
 
@@ -48,36 +52,46 @@ public class MollyProtoGenerator {
                 .map(Relation::getMutant)
                 .collect(Collectors.toSet());
 
-        var unitsToWrite = language.getUnits()
+        var messageUnits = language.getUnits()
+                .filter((unit) -> !(unit instanceof Enumeration))
                 .filter((unit) -> !definitionMutants.contains(unit))
-                .collect(Collectors.toList());
+                .collect(toList());
 
-        Map<String, DescriptorProtos.DescriptorProto.Builder> buildersByUnitName = unitsToWrite.stream()
-                .collect(Collectors.toMap(Unit::getUnitName, this::createMessageBuilder, (a, b) -> a));
+        Map<String, DescriptorProtos.DescriptorProto.Builder> messageBuildersByUnitName = messageUnits.stream()
+                .collect(toMap(Unit::getUnitName, this::createMessageBuilder, (a, b) -> a));
 
         var context = new MollyProtoGenerationContext(
-                buildersByUnitName,
+                messageBuildersByUnitName,
                 language,
                 config
         );
 
         language.getRelations().forEach((relation) -> apply(relation, context));
 
-        unitsToWrite.forEach(unit -> {
+        messageUnits.forEach(unit -> {
             if (unit.getContext().isPresent()) {
-                var outerMessageBuilder = buildersByUnitName.computeIfAbsent(
+                var outerMessageBuilder = messageBuildersByUnitName.computeIfAbsent(
                         unit.getContext().get(),
                         contextName -> DescriptorProtos.DescriptorProto.newBuilder()
                                 .setName(messageNameOf(contextName)));
 
-                var innerMessageBuilder = buildersByUnitName.remove(unit.getUnitName());
+                var innerMessageBuilder = messageBuildersByUnitName.remove(unit.getUnitName());
 
                 outerMessageBuilder.addNestedType(innerMessageBuilder);
             }
         });
 
+        var enumUnits = language.getUnits()
+                .filter((unit) -> unit instanceof Enumeration)
+                .map((unit) -> (Enumeration) unit)
+                .collect(toList());
+
+        Map<String, DescriptorProtos.EnumDescriptorProto.Builder> enumBuildersByUnitName = enumUnits.stream()
+                .collect(toMap(Unit::getUnitName, this::createEnumBuilder, (a, b) -> a));
+
         var protoFileDescriptorBuilder = createFileDescriptorBuilder();
-        buildersByUnitName.values().forEach(protoFileDescriptorBuilder::addMessageType);
+        messageBuildersByUnitName.values().forEach(protoFileDescriptorBuilder::addMessageType);
+        enumBuildersByUnitName.values().forEach(protoFileDescriptorBuilder::addEnumType);
 
         return DescriptorProtos.FileDescriptorSet.newBuilder()
                 .addFile(protoFileDescriptorBuilder);
@@ -85,6 +99,27 @@ public class MollyProtoGenerator {
 
     private DescriptorProtos.DescriptorProto.Builder createMessageBuilder(Unit unit) {
         return DescriptorProtos.DescriptorProto.newBuilder().setName(messageNameOf(unit.getName()));
+    }
+
+    private DescriptorProtos.EnumDescriptorProto.Builder createEnumBuilder(Enumeration enumeration) {
+        DescriptorProtos.EnumDescriptorProto.Builder builder = DescriptorProtos.EnumDescriptorProto.newBuilder()
+                .setName(messageNameOf(enumeration.getName()))
+                .addValue(DescriptorProtos.EnumValueDescriptorProto.newBuilder()
+                        .setName((enumeration.getName() + " unrecognized")
+                                .toUpperCase()
+                                .replaceAll("\\W+", "_"))
+                        .setNumber(0)
+                        .build());
+
+        var enumValues = enumValuesOf(enumeration);
+        for (int i = 0; i < enumValues.size(); i++) {
+            builder.addValue(DescriptorProtos.EnumValueDescriptorProto.newBuilder()
+                    .setName(enumValues.get(i))
+                    .setNumber(i + 1)
+                    .build());
+        }
+
+        return builder;
     }
 
     private DescriptorProtos.FileDescriptorProto.Builder createFileDescriptorBuilder() {
