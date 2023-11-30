@@ -294,11 +294,54 @@ public class TestLanguages {
         return molly;
     }
 
+    public static Language shelter() {
+        var language = new Language();
+
+        var shelter = new Unit("shelter");
+        var animal = new Unit("animal");
+        var name = new Unit("name");
+        var cat = new Unit("cat");
+        var dog = new Unit("dog");
+
+        var units = List.of(
+                shelter,
+                animal,
+                name,
+                cat,
+                dog
+        );
+
+        var declawed = new Descriptor("declawed", "clawed");
+        var houseTrained = new Descriptor("house trained");
+
+        var descriptors = List.of(
+                declawed,
+                houseTrained
+        );
+
+        var relations = List.of(
+                new Composition.Builder(shelter, animal).cardinality(ONE_TO_MANY).build(),
+                new Composition(animal, name),
+                new Definition(name, Unit.primitives.get("string")),
+                new Categorization(cat, animal),
+                new Description(cat, declawed),
+                new Categorization(dog, animal),
+                new Description(dog, houseTrained)
+        );
+
+        units.forEach(language::addUnit);
+        descriptors.forEach(language::addDescriptor);
+        relations.forEach(language::addRelation);
+
+        return language;
+    }
+
     public static Language get(String languageName) {
         var key = languageName.toLowerCase();
         if (key.equals("pbj")) return pbj();
         if (key.equals("blackjack")) return blackjack();
         if (key.equals("molly")) return molly();
+        if (key.equals("shelter")) return shelter();
         return null;
     }
 }

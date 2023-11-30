@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MollyProtoGeneratorTest {
     @DisplayName("generator creates proto for language")
     @ParameterizedTest(name = "{0}.molly ==> proto/{0}.json")
-    @ValueSource(strings = {"PBJ"})
+    @ValueSource(strings = {"PBJ", "Shelter"})
     public void generator_creates_proto_for_language(String languageName) throws IOException {
         Language language = TestLanguages.get(languageName);
 
@@ -32,6 +32,6 @@ public class MollyProtoGeneratorTest {
         String expectedJson = new BufferedReader(new InputStreamReader(expectedJsonResource.getInputStream(), UTF_8))
                 .lines().collect(joining("\n"));
 
-        assertEquals(actualJson.trim(), expectedJson.trim());
+        assertEquals(expectedJson.trim(), actualJson.trim());
     }
 }

@@ -13,7 +13,7 @@ public class MollyParserTest {
 
     @DisplayName("parse tree has all relation declarations")
     @ParameterizedTest(name = "resource: {0}.molly")
-    @ValueSource(strings = {"PBJ", "Blackjack", "Molly"})
+    @ValueSource(strings = {"PBJ", "Blackjack", "Molly", "Shelter"})
     void parse_tree_has_all_declarations(String languageName) {
         var resourceName = String.format("languages/%s.molly", languageName);
         var expectedNumberOfDeclarations = TestUtils.linesOf(resourceName)
@@ -26,7 +26,7 @@ public class MollyParserTest {
 
     @DisplayName("parser returns the language")
     @ParameterizedTest(name = "resource: {0}.molly")
-    @ValueSource(strings = {"PBJ", "Blackjack", "Molly"})
+    @ValueSource(strings = {"PBJ", "Blackjack", "Molly", "Shelter"})
     void parser_returns_language(String languageName) {
         var interpreter = new MollyListenerInterpreter();
         var expected = TestLanguages.get(languageName);

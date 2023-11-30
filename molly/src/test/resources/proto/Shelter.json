@@ -1,0 +1,50 @@
+{
+  "file": [{
+    "name": "model.proto",
+    "package": "molly",
+    "messageType": [{
+      "name": "Shelter",
+      "field": [{
+        "name": "animals",
+        "number": 1,
+        "label": "LABEL_REPEATED",
+        "type": "TYPE_MESSAGE",
+        "typeName": "Animal"
+      }]
+    }, {
+      "name": "Cat",
+      "field": [{
+        "name": "name",
+        "number": 1,
+        "type": "TYPE_STRING"
+      }, {
+        "name": "declawed",
+        "number": 101,
+        "type": "TYPE_BOOL"
+      }]
+    }, {
+      "name": "Animal",
+      "field": [{
+        "name": "name",
+        "number": 1,
+        "type": "TYPE_STRING"
+      }]
+    }, {
+      "name": "Dog",
+      "field": [{
+        "name": "name",
+        "number": 1,
+        "type": "TYPE_STRING"
+      }, {
+        "name": "house_trained",
+        "number": 101,
+        "type": "TYPE_BOOL"
+      }]
+    }],
+    "options": {
+      "javaPackage": "io.github.tysonmcnulty.proto"
+    },
+    "syntax": "proto3",
+    "edition": "2023"
+  }]
+}

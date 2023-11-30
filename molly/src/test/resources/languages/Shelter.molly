@@ -1,0 +1,6 @@
+- A shelter has many animals
+- An animal has a name, which is just a string
+- A cat is a kind of animal
+- A cat is either declawed or clawed
+- A dog is a kind of animal
+- A dog is either house trained or not

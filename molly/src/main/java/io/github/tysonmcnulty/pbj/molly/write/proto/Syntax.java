@@ -14,7 +14,7 @@ public class Syntax {
     }
 
     public static String fieldNameOf(String termName) {
-        return WordUtils.uncapitalize(messageNameOf(termName));
+        return termName.toLowerCase().replaceAll("\\W", "_");
     }
 
     public static String typeNameOf(Unit unit) {

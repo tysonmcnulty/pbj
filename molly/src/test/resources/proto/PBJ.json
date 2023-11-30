@@ -27,7 +27,7 @@
         "type": "TYPE_MESSAGE",
         "typeName": "Bread.Slice"
       }, {
-        "name": "peanutButter",
+        "name": "peanut_butter",
         "number": 2,
         "type": "TYPE_MESSAGE",
         "typeName": "PeanutButter"

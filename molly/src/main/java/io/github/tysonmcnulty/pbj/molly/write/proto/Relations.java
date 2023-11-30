@@ -4,12 +4,17 @@ import com.google.protobuf.DescriptorProtos;
 import io.github.tysonmcnulty.pbj.molly.core.relation.Categorization;
 import io.github.tysonmcnulty.pbj.molly.core.relation.Composition;
 import io.github.tysonmcnulty.pbj.molly.core.relation.Description;
+import io.github.tysonmcnulty.pbj.molly.core.term.Unit;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL;
 import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED;
 import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.*;
 import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.fieldNameOf;
 import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.typeNameOf;
+import static java.util.Collections.singletonList;
 
 public class Relations {
     public static void applyComposition(Composition composition, MollyProtoGenerationContext context) {
@@ -43,7 +48,13 @@ public class Relations {
             fieldBuilder.setLabel(LABEL_OPTIONAL);
         }
 
-        builder.addField(fieldBuilder);
+        Deque<Unit> children = new ArrayDeque<>(singletonList(composition.getMutant()));
+        while (!children.isEmpty()) {
+            var next = children.pop();
+            children.addAll(context.getLanguage().getChildren(next));
+            var nextBuilder = context.getBuildersByUnitName().get(next.getUnitName());
+            nextBuilder.addField(fieldBuilder);
+        }
     }
 
 
@@ -57,13 +68,19 @@ public class Relations {
         var builder = context.getBuildersByUnitName().get(description.getMutant().getUnitName());
         var fieldBuilder = DescriptorProtos.FieldDescriptorProto.newBuilder()
                 .setType(TYPE_BOOL)
-                .setName(description.getMutation().getName())
+                .setName(fieldNameOf(description.getMutation().getName()))
                 .setNumber(context.yieldFieldNumber(description.getMutant().getUnitName()));
 
         if (description.getOperator().isQualified()) {
             fieldBuilder.setLabel(LABEL_OPTIONAL);
         }
 
-        builder.addField(fieldBuilder);
+        Deque<Unit> children = new ArrayDeque<>(singletonList(description.getMutant()));
+        while (!children.isEmpty()) {
+            var next = children.pop();
+            children.addAll(context.getLanguage().getChildren(next));
+            var nextBuilder = context.getBuildersByUnitName().get(next.getUnitName());
+            nextBuilder.addField(fieldBuilder);
+        }
     }
 }
