@@ -26,12 +26,12 @@
         "name": "mutation",
         "number": 2,
         "type": "TYPE_MESSAGE",
-        "typeName": "Term"
+        "typeName": "Unit"
       }, {
         "name": "operator",
         "number": 3,
         "type": "TYPE_MESSAGE",
-        "typeName": "Operator"
+        "typeName": "Categorizer"
       }]
     }, {
       "name": "Composer",
@@ -55,12 +55,12 @@
         "name": "mutation",
         "number": 2,
         "type": "TYPE_MESSAGE",
-        "typeName": "Term"
+        "typeName": "Descriptor"
       }, {
         "name": "operator",
         "number": 3,
         "type": "TYPE_MESSAGE",
-        "typeName": "Operator"
+        "typeName": "Describer"
       }]
     }, {
       "name": "Language",
@@ -138,12 +138,12 @@
         "name": "mutation",
         "number": 2,
         "type": "TYPE_MESSAGE",
-        "typeName": "Term"
+        "typeName": "Unit"
       }, {
         "name": "operator",
         "number": 3,
         "type": "TYPE_MESSAGE",
-        "typeName": "Operator"
+        "typeName": "Composer"
       }, {
         "name": "cardinality",
         "number": 101,
@@ -167,12 +167,12 @@
         "name": "mutation",
         "number": 2,
         "type": "TYPE_MESSAGE",
-        "typeName": "Term"
+        "typeName": "Unit"
       }, {
         "name": "operator",
         "number": 3,
         "type": "TYPE_MESSAGE",
-        "typeName": "Operator"
+        "typeName": "Definer"
       }]
     }, {
       "name": "Term",

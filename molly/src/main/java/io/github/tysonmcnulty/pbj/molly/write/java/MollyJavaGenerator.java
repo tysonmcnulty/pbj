@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.diffplug.spotless.Formatter.NO_FILE_SENTINEL;
+import static com.google.common.io.Files.asCharSink;
 import static io.github.tysonmcnulty.pbj.molly.write.java.Syntax.classNameOf;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 
@@ -133,14 +134,12 @@ public class MollyJavaGenerator {
                     }
                 });
 
-                var formatted = Objects.requireNonNull(
+                var formattedCodeString = Objects.requireNonNull(
                     formatterStep.format(code.toString(),
                         NO_FILE_SENTINEL)
                 );
 
-                CharSink sink = com.google.common.io.Files.asCharSink(outputFile.toFile(), StandardCharsets.UTF_8);
-                System.out.printf("Writing %s to %s%n", typeSpec.name, outputFile.getParent().toString());
-                sink.write(formatted);
+                asCharSink(outputFile.toFile(), StandardCharsets.UTF_8).write(formattedCodeString);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
