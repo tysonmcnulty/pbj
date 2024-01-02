@@ -21,6 +21,11 @@
         "name": "declawed",
         "number": 101,
         "type": "TYPE_BOOL"
+      }, {
+        "name": "animal_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "AnimalType"
       }]
     }, {
       "name": "Animal",
@@ -28,6 +33,11 @@
         "name": "name",
         "number": 1,
         "type": "TYPE_STRING"
+      }, {
+        "name": "animal_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "AnimalType"
       }]
     }, {
       "name": "Dog",
@@ -39,6 +49,24 @@
         "name": "house_trained",
         "number": 101,
         "type": "TYPE_BOOL"
+      }, {
+        "name": "animal_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "AnimalType"
+      }]
+    }],
+    "enumType": [{
+      "name": "AnimalType",
+      "value": [{
+        "name": "ANIMAL_TYPE_UNSPECIFIED",
+        "number": 0
+      }, {
+        "name": "ANIMAL_TYPE_CAT",
+        "number": 1
+      }, {
+        "name": "ANIMAL_TYPE_DOG",
+        "number": 2
       }]
     }],
     "options": {

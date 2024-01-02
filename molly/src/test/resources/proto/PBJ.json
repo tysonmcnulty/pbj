@@ -17,7 +17,13 @@
         }]
       }]
     }, {
-      "name": "PeanutButter"
+      "name": "PeanutButter",
+      "field": [{
+        "name": "spread_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "SpreadType"
+      }]
     }, {
       "name": "PBJ",
       "field": [{
@@ -46,9 +52,34 @@
         "typeName": "Spread"
       }]
     }, {
-      "name": "Jelly"
+      "name": "Jelly",
+      "field": [{
+        "name": "spread_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "SpreadType"
+      }]
     }, {
-      "name": "Spread"
+      "name": "Spread",
+      "field": [{
+        "name": "spread_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "SpreadType"
+      }]
+    }],
+    "enumType": [{
+      "name": "SpreadType",
+      "value": [{
+        "name": "SPREAD_TYPE_UNSPECIFIED",
+        "number": 0
+      }, {
+        "name": "SPREAD_TYPE_JELLY",
+        "number": 1
+      }, {
+        "name": "SPREAD_TYPE_PEANUT_BUTTER",
+        "number": 2
+      }]
     }],
     "options": {
       "javaPackage": "io.github.tysonmcnulty.proto"

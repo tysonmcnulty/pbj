@@ -96,7 +96,7 @@
     "enumType": [{
       "name": "SuitValue",
       "value": [{
-        "name": "SUIT_VALUE_UNRECOGNIZED",
+        "name": "SUIT_VALUE_UNSPECIFIED",
         "number": 0
       }, {
         "name": "SUIT_VALUE_CLUB",
@@ -114,7 +114,7 @@
     }, {
       "name": "RankValue",
       "value": [{
-        "name": "RANK_VALUE_UNRECOGNIZED",
+        "name": "RANK_VALUE_UNSPECIFIED",
         "number": 0
       }, {
         "name": "RANK_VALUE_ACE",

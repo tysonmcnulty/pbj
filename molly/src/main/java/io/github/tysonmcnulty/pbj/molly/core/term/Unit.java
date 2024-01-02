@@ -8,7 +8,7 @@ import static io.github.tysonmcnulty.pbj.molly.EnglishUtils.inflectionsOf;
 
 public class Unit extends Term {
 
-    private String context;
+    protected String context;
 
     public Unit(String name) {
         super(name);

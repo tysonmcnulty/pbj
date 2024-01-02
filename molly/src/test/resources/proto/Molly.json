@@ -3,7 +3,13 @@
     "name": "model.proto",
     "package": "molly",
     "messageType": [{
-      "name": "Definer"
+      "name": "Definer",
+      "field": [{
+        "name": "operator_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "OperatorType"
+      }]
     }, {
       "name": "Describer",
       "field": [{
@@ -14,6 +20,11 @@
         "name": "qualified",
         "number": 102,
         "type": "TYPE_BOOL"
+      }, {
+        "name": "operator_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "OperatorType"
       }]
     }, {
       "name": "Categorization",
@@ -32,6 +43,11 @@
         "number": 3,
         "type": "TYPE_MESSAGE",
         "typeName": "Categorizer"
+      }, {
+        "name": "relation_type",
+        "number": 4,
+        "type": "TYPE_ENUM",
+        "typeName": "RelationType"
       }]
     }, {
       "name": "Composer",
@@ -43,6 +59,11 @@
         "name": "qualified",
         "number": 102,
         "type": "TYPE_BOOL"
+      }, {
+        "name": "operator_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "OperatorType"
       }]
     }, {
       "name": "Description",
@@ -61,6 +82,11 @@
         "number": 3,
         "type": "TYPE_MESSAGE",
         "typeName": "Describer"
+      }, {
+        "name": "relation_type",
+        "number": 4,
+        "type": "TYPE_ENUM",
+        "typeName": "RelationType"
       }]
     }, {
       "name": "Language",
@@ -94,9 +120,20 @@
         "number": 101,
         "label": "LABEL_OPTIONAL",
         "type": "TYPE_STRING"
+      }, {
+        "name": "term_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "TermType"
       }]
     }, {
-      "name": "Operator"
+      "name": "Operator",
+      "field": [{
+        "name": "operator_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "OperatorType"
+      }]
     }, {
       "name": "Relation",
       "field": [{
@@ -114,6 +151,11 @@
         "number": 3,
         "type": "TYPE_MESSAGE",
         "typeName": "Operator"
+      }, {
+        "name": "relation_type",
+        "number": 4,
+        "type": "TYPE_ENUM",
+        "typeName": "RelationType"
       }]
     }, {
       "name": "Unit",
@@ -126,6 +168,16 @@
         "number": 101,
         "label": "LABEL_OPTIONAL",
         "type": "TYPE_STRING"
+      }, {
+        "name": "term_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "TermType"
+      }, {
+        "name": "unit_type",
+        "number": 102,
+        "type": "TYPE_ENUM",
+        "typeName": "UnitType"
       }]
     }, {
       "name": "Composition",
@@ -153,9 +205,20 @@
         "name": "categorical",
         "number": 102,
         "type": "TYPE_BOOL"
+      }, {
+        "name": "relation_type",
+        "number": 4,
+        "type": "TYPE_ENUM",
+        "typeName": "RelationType"
       }]
     }, {
-      "name": "Categorizer"
+      "name": "Categorizer",
+      "field": [{
+        "name": "operator_type",
+        "number": 1,
+        "type": "TYPE_ENUM",
+        "typeName": "OperatorType"
+      }]
     }, {
       "name": "Definition",
       "field": [{
@@ -173,6 +236,11 @@
         "number": 3,
         "type": "TYPE_MESSAGE",
         "typeName": "Definer"
+      }, {
+        "name": "relation_type",
+        "number": 4,
+        "type": "TYPE_ENUM",
+        "typeName": "RelationType"
       }]
     }, {
       "name": "Term",
@@ -180,6 +248,11 @@
         "name": "name",
         "number": 1,
         "type": "TYPE_STRING"
+      }, {
+        "name": "term_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "TermType"
       }]
     }, {
       "name": "Enumeration",
@@ -197,12 +270,79 @@
         "number": 201,
         "label": "LABEL_REPEATED",
         "type": "TYPE_STRING"
+      }, {
+        "name": "term_type",
+        "number": 2,
+        "type": "TYPE_ENUM",
+        "typeName": "TermType"
+      }, {
+        "name": "unit_type",
+        "number": 102,
+        "type": "TYPE_ENUM",
+        "typeName": "UnitType"
       }]
     }],
     "enumType": [{
+      "name": "RelationType",
+      "value": [{
+        "name": "RELATION_TYPE_UNSPECIFIED",
+        "number": 0
+      }, {
+        "name": "RELATION_TYPE_CATEGORIZATION",
+        "number": 1
+      }, {
+        "name": "RELATION_TYPE_DEFINITION",
+        "number": 2
+      }, {
+        "name": "RELATION_TYPE_COMPOSITION",
+        "number": 3
+      }, {
+        "name": "RELATION_TYPE_DESCRIPTION",
+        "number": 4
+      }]
+    }, {
+      "name": "OperatorType",
+      "value": [{
+        "name": "OPERATOR_TYPE_UNSPECIFIED",
+        "number": 0
+      }, {
+        "name": "OPERATOR_TYPE_COMPOSER",
+        "number": 1
+      }, {
+        "name": "OPERATOR_TYPE_DESCRIBER",
+        "number": 2
+      }, {
+        "name": "OPERATOR_TYPE_CATEGORIZER",
+        "number": 3
+      }, {
+        "name": "OPERATOR_TYPE_DEFINER",
+        "number": 4
+      }]
+    }, {
+      "name": "TermType",
+      "value": [{
+        "name": "TERM_TYPE_UNSPECIFIED",
+        "number": 0
+      }, {
+        "name": "TERM_TYPE_DESCRIPTOR",
+        "number": 1
+      }, {
+        "name": "TERM_TYPE_UNIT",
+        "number": 2
+      }]
+    }, {
+      "name": "UnitType",
+      "value": [{
+        "name": "UNIT_TYPE_UNSPECIFIED",
+        "number": 0
+      }, {
+        "name": "UNIT_TYPE_ENUMERATION",
+        "number": 1
+      }]
+    }, {
       "name": "CardinalityValue",
       "value": [{
-        "name": "CARDINALITY_VALUE_UNRECOGNIZED",
+        "name": "CARDINALITY_VALUE_UNSPECIFIED",
         "number": 0
       }, {
         "name": "CARDINALITY_VALUE_ONE_TO_ONE",

@@ -20,10 +20,16 @@ public class Enumeration extends Unit {
     public static class Builder {
 
         private final String name;
+        private String context;
         private final List<String> values = new ArrayList<>();
 
         public Builder(String name) {
             this.name = name;
+        }
+
+        public Builder context(String context) {
+            this.context = context;
+            return this;
         }
 
         public Builder values(String... values) {
@@ -32,7 +38,11 @@ public class Enumeration extends Unit {
         }
 
         public Enumeration build() {
-            return new Enumeration(name, values.toArray(new String[0]));
+            var enumeration = new Enumeration(name, values.toArray(new String[0]));
+            if (context != null) {
+                enumeration.setContext(context);
+            }
+            return enumeration;
         }
     }
 

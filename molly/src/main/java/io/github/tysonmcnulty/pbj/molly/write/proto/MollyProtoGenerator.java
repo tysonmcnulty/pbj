@@ -12,6 +12,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.github.tysonmcnulty.pbj.molly.write.proto.Syntax.enumValuesOf;
@@ -89,6 +90,18 @@ public class MollyProtoGenerator {
         Map<String, DescriptorProtos.EnumDescriptorProto.Builder> enumBuildersByUnitName = enumUnits.stream()
                 .collect(toMap(Unit::getUnitName, this::createEnumBuilder, (a, b) -> a));
 
+        language.getUnits().forEach((u) -> {
+            Set<Unit> children;
+            if (!(children = language.getChildren(u)).isEmpty()) {
+                var childrenEnumeration = new Enumeration.Builder(u.getName() + " type")
+                        .context(u.getContext().orElse(null))
+                        .values(children.stream().map(Unit::getUnitName).toArray(String[]::new))
+                        .build();
+                apply(new Composition(u, childrenEnumeration), context);
+                enumBuildersByUnitName.put(childrenEnumeration.getUnitName(), createEnumBuilder(childrenEnumeration));
+            }
+        });
+
         var protoFileDescriptorBuilder = createFileDescriptorBuilder();
         messageBuildersByUnitName.values().forEach(protoFileDescriptorBuilder::addMessageType);
         enumBuildersByUnitName.values().forEach(protoFileDescriptorBuilder::addEnumType);
@@ -105,7 +118,7 @@ public class MollyProtoGenerator {
         DescriptorProtos.EnumDescriptorProto.Builder builder = DescriptorProtos.EnumDescriptorProto.newBuilder()
                 .setName(messageNameOf(enumeration.getName()))
                 .addValue(DescriptorProtos.EnumValueDescriptorProto.newBuilder()
-                        .setName((enumeration.getName() + " unrecognized")
+                        .setName((enumeration.getName() + " unspecified")
                                 .toUpperCase()
                                 .replaceAll("\\W+", "_"))
                         .setNumber(0)
